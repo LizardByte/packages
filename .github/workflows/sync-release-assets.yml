@@ -1,0 +1,68 @@
+---
+name: Sync Release Assets
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+  schedule:
+    - cron: '0 * * * *'
+
+jobs:
+  sync-assets:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          token: ${{ secrets.GH_BOT_TOKEN }}
+
+      - name: Create or checkout dist branch into dist directory
+        run: |
+          if git rev-parse --verify origin/dist >/dev/null 2>&1; then
+            echo "Dist branch exists, checking it out"
+            git worktree add dist origin/dist
+          else
+            echo "Dist branch doesn't exist, creating new one"
+            git worktree add --orphan dist
+            cd dist
+            git rm -rf . 2>/dev/null || true
+          fi
+
+      - name: Copy gh-pages template files to dist directory
+        run: cp -r gh-pages-template/* dist/
+
+      - name: Get organization repositories and download assets
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ secrets.GH_BOT_TOKEN }}
+          script: |
+            // Import the sync assets module
+            const { syncReleaseAssets } = require('./.github/scripts/sync-assets.js');
+
+            // Check if this is a pull request event
+            const isPullRequest = context.eventName === 'pull_request';
+
+            // Run the asset synchronization with PR limit
+            // Change working directory to dist for file operations
+            process.chdir('./dist');
+            await syncReleaseAssets(github, context, isPullRequest);
+
+      - name: Commit and push changes
+        if: github.event_name != 'pull_request'
+        uses: actions-js/push@v1.5
+        with:
+          author_email: ${{ secrets.GH_BOT_EMAIL }}
+          author_name: ${{ secrets.GH_BOT_NAME }}
+          branch: dist
+          directory: dist
+          github_token: ${{ secrets.GH_BOT_TOKEN }}
+          message: 'Update release assets - ${{ github.run_id }}'
