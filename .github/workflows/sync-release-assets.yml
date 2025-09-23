@@ -6,6 +6,9 @@ permissions:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
 
+env:
+  MAX_NEW_ASSETS: 50  # Set to 0 for unlimited, or any positive number to limit downloads per run
+
 on:
   workflow_dispatch:
   pull_request:
@@ -51,10 +54,13 @@ jobs:
             // Check if this is a pull request event
             const isPullRequest = context.eventName === 'pull_request';
 
-            // Run the asset synchronization with PR limit
+            // Get the max new assets limit from environment
+            const maxNewAssets = parseInt(process.env.MAX_NEW_ASSETS) || 0;
+
+            // Run the asset synchronization with PR limit and asset limit
             // Change working directory to dist for file operations
             process.chdir('./dist');
-            await syncReleaseAssets(github, context, isPullRequest);
+            await syncReleaseAssets(github, context, isPullRequest, maxNewAssets);
 
       - name: Commit and push changes
         if: github.event_name != 'pull_request'

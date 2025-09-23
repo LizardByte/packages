@@ -10,10 +10,11 @@ const { downloadAssetWithRetry } = require('./download-utils');
 /**
  * Process a single repository and download its release assets
  */
-async function processRepository(github, context, repo, repositoryData, totalAssets, isPullRequest = false, releaseLimit = null) {
+async function processRepository(github, context, repo, repositoryData, totalAssets, isPullRequest = false, releaseLimit = null, maxNewAssets = 0, newAssetsDownloaded = 0) {
   console.log(`Processing repository: ${repo.name}`);
 
   let processedReleasesWithAssets = 0;
+  let repoNewAssets = 0;
 
   try {
     // Get releases for the repository with pagination
@@ -28,7 +29,7 @@ async function processRepository(github, context, repo, repositoryData, totalAss
 
     if (publishedReleases.length === 0) {
       console.log(`No published releases found for ${repo.name}`);
-      return { totalAssets, processedReleases: 0 };
+      return { totalAssets, processedReleases: 0, newAssetsDownloaded };
     }
 
     const repoData = {
@@ -37,14 +38,24 @@ async function processRepository(github, context, repo, repositoryData, totalAss
     };
 
     for (const release of publishedReleases) {
+      // Check if we've reached the asset limit globally
+      if (maxNewAssets > 0 && (newAssetsDownloaded + repoNewAssets) >= maxNewAssets) {
+        console.log(`Reached maximum new assets limit (${maxNewAssets}). Stopping processing for ${repo.name}.`);
+        break;
+      }
+
       // For pull requests, stop after processing the specified number of releases with assets
       if (isPullRequest && releaseLimit && processedReleasesWithAssets >= releaseLimit) {
         console.log(`PR mode: Reached limit of ${releaseLimit} releases with assets for ${repo.name}`);
         break;
       }
 
-      const assetCount = await processRelease(repo.name, release);
+      const result = await processRelease(repo.name, release, maxNewAssets, newAssetsDownloaded + repoNewAssets);
+      const assetCount = result.assetCount;
+      const newAssets = result.newAssets;
+
       totalAssets += assetCount;
+      repoNewAssets += newAssets;
 
       if (assetCount > 0) {
         repoData.releases.push({
@@ -63,18 +74,18 @@ async function processRepository(github, context, repo, repositoryData, totalAss
     console.error(`Error processing repository ${repo.name}: ${error.message}`);
   }
 
-  return { totalAssets, processedReleases: processedReleasesWithAssets };
+  return { totalAssets, processedReleases: processedReleasesWithAssets, newAssetsDownloaded: newAssetsDownloaded + repoNewAssets };
 }
 
 /**
  * Process a single release and download its assets
  */
-async function processRelease(repoName, release) {
+async function processRelease(repoName, release, maxNewAssets = 0, currentNewAssets = 0) {
   console.log(`Processing release: ${release.tag_name}`);
 
   if (release.assets.length === 0) {
     console.log(`No assets found for release ${release.tag_name}`);
-    return 0;
+    return { assetCount: 0, newAssets: 0 };
   }
 
   // Create directory structure
@@ -82,15 +93,25 @@ async function processRelease(repoName, release) {
   ensureDir(releaseDir);
 
   let assetCount = 0;
+  let newAssets = 0;
 
   for (const asset of release.assets) {
-    const downloaded = await processAsset(releaseDir, asset);
-    if (downloaded) {
+    // Check if we've reached the new assets download limit
+    if (maxNewAssets > 0 && (currentNewAssets + newAssets) >= maxNewAssets) {
+      console.log(`Reached maximum new assets limit (${maxNewAssets}) for this run. Stopping asset processing for release ${release.tag_name}.`);
+      break;
+    }
+
+    const result = await processAsset(releaseDir, asset);
+    if (result.downloaded) {
       assetCount++;
+      if (result.isNew) {
+        newAssets++;
+      }
     }
   }
 
-  return assetCount;
+  return { assetCount, newAssets };
 }
 
 /**
@@ -102,7 +123,7 @@ async function processAsset(releaseDir, asset) {
   // Skip if asset already exists
   if (fileExists(assetPath)) {
     console.log(`Asset already exists: ${assetPath}`);
-    return true;
+    return { downloaded: true, isNew: false };
   }
 
   console.log(`Downloading: ${asset.name}`);
@@ -119,11 +140,11 @@ async function processAsset(releaseDir, asset) {
     // Generate hash files
     const hashSuccess = generateHashFiles(assetPath);
 
-    return hashSuccess;
+    return { downloaded: hashSuccess, isNew: true };
 
   } catch (error) {
     console.error(`Failed to download ${asset.name}: ${error.message}`);
-    return false;
+    return { downloaded: false, isNew: false };
   }
 }
 
@@ -146,11 +167,17 @@ function generateRepositoryDataJson(repositoryData, totalAssets) {
 /**
  * Main function to sync all release assets
  */
-async function syncReleaseAssets(github, context, isPullRequest = false) {
+async function syncReleaseAssets(github, context, isPullRequest = false, maxNewAssets = 0) {
   console.log('Getting repositories from organization...');
 
   if (isPullRequest) {
     console.log('Running in pull request mode - limiting to 2 releases with assets per repository');
+  }
+
+  if (maxNewAssets > 0) {
+    console.log(`Asset download limit: ${maxNewAssets} new assets per run`);
+  } else {
+    console.log('Asset download limit: unlimited');
   }
 
   // Get all repositories with pagination
@@ -165,9 +192,16 @@ async function syncReleaseAssets(github, context, isPullRequest = false) {
   const repositoryData = [];
   let totalAssets = 0;
   let totalProcessedReleases = 0;
+  let newAssetsDownloaded = 0;
 
   // Process each repository
   for (const repo of repos) {
+    // Check if we've reached the asset limit
+    if (maxNewAssets > 0 && newAssetsDownloaded >= maxNewAssets) {
+      console.log(`Reached maximum new assets limit (${maxNewAssets}). Stopping processing.`);
+      break;
+    }
+
     const result = await processRepository(
       github,
       context,
@@ -175,10 +209,13 @@ async function syncReleaseAssets(github, context, isPullRequest = false) {
       repositoryData,
       totalAssets,
       isPullRequest,
-      isPullRequest ? 2 : null
+      isPullRequest ? 2 : null,
+      maxNewAssets,
+      newAssetsDownloaded
     );
     totalAssets = result.totalAssets;
     totalProcessedReleases += result.processedReleases;
+    newAssetsDownloaded = result.newAssetsDownloaded;
   }
 
   // Generate repository data JSON for the index.html
@@ -188,6 +225,12 @@ async function syncReleaseAssets(github, context, isPullRequest = false) {
     console.log(`PR mode: Processed ${repositoryData.length} repositories with ${totalProcessedReleases} releases containing assets`);
   } else {
     console.log(`Processed ${repositoryData.length} repositories with assets`);
+  }
+
+  if (maxNewAssets > 0) {
+    console.log(`Downloaded ${newAssetsDownloaded} new assets (limit: ${maxNewAssets})`);
+  } else {
+    console.log(`Downloaded ${newAssetsDownloaded} new assets`);
   }
 }
 
