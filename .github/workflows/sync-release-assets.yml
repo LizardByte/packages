@@ -32,7 +32,7 @@ jobs:
             git worktree add dist origin/dist
           else
             echo "Dist branch doesn't exist, creating new one"
-            git worktree add --orphan dist dist
+            git worktree add --orphan dist
             cd dist
             git rm -rf . 2>/dev/null || true
           fi
@@ -47,10 +47,10 @@ jobs:
           script: |
             // Import the sync assets module
             const { syncReleaseAssets } = require('./.github/scripts/sync-assets.js');
-            
+
             // Check if this is a pull request event
             const isPullRequest = context.eventName === 'pull_request';
-            
+
             // Run the asset synchronization with PR limit
             // Change working directory to dist for file operations
             process.chdir('./dist');
