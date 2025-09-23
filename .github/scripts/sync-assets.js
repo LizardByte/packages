@@ -149,22 +149,6 @@ async function processAsset(releaseDir, asset) {
 }
 
 /**
- * Generate repository data JSON for the web interface
- */
-function generateRepositoryDataJson(repositoryData, totalAssets) {
-  const dataJson = {
-    repositories: repositoryData,
-    lastUpdated: new Date().toISOString(),
-    totalRepositories: repositoryData.length,
-    totalReleases: repositoryData.reduce((sum, repo) => sum + repo.releases.length, 0),
-    totalAssets: totalAssets
-  };
-
-  writeFile('repository-data.json', JSON.stringify(dataJson, null, 2));
-  console.log('Generated repository-data.json');
-}
-
-/**
  * Main function to sync all release assets
  */
 async function syncReleaseAssets(github, context, isPullRequest = false, maxNewAssets = 0) {
@@ -217,9 +201,6 @@ async function syncReleaseAssets(github, context, isPullRequest = false, maxNewA
     totalProcessedReleases += result.processedReleases;
     newAssetsDownloaded = result.newAssetsDownloaded;
   }
-
-  // Generate repository data JSON for the index.html
-  generateRepositoryDataJson(repositoryData, totalAssets);
 
   if (isPullRequest) {
     console.log(`PR mode: Processed ${repositoryData.length} repositories with ${totalProcessedReleases} releases containing assets`);

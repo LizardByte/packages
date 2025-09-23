@@ -12,10 +12,15 @@ env:
 on:
   workflow_dispatch:
   pull_request:
+    branches:
+      - master
     types:
       - opened
       - reopened
       - synchronize
+  push:
+    branches:
+      - master
   schedule:
     - cron: '0 * * * *'
 
@@ -39,9 +44,6 @@ jobs:
             cd dist
             git rm -rf . 2>/dev/null || true
           fi
-
-      - name: Copy gh-pages template files to dist directory
-        run: cp -r gh-pages-template/* dist/
 
       - name: Get organization repositories and download assets
         uses: actions/github-script@v8
@@ -72,3 +74,39 @@ jobs:
           directory: dist
           github_token: ${{ secrets.GH_BOT_TOKEN }}
           message: 'Update release assets - ${{ github.run_id }}'
+
+  deploy-website:
+    needs: sync-assets
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          token: ${{ secrets.GH_BOT_TOKEN }}
+
+      - name: Create or checkout gh-pages branch into gh-pages directory
+        run: |
+          if git rev-parse --verify origin/gh-pages >/dev/null 2>&1; then
+            echo "gh-pages branch exists, checking it out"
+            git worktree add gh-pages origin/gh-pages
+          else
+            echo "gh-pages branch doesn't exist, creating new one"
+            git worktree add --orphan gh-pages
+            cd gh-pages
+            git rm -rf . 2>/dev/null || true
+          fi
+
+      - name: Copy website files to gh-pages directory
+        run: |
+          cp -r gh-pages-template/* gh-pages/
+
+      - name: Commit and push changes
+        uses: actions-js/push@v1.5
+        with:
+          author_email: ${{ secrets.GH_BOT_EMAIL }}
+          author_name: ${{ secrets.GH_BOT_NAME }}
+          branch: gh-pages
+          directory: gh-pages
+          github_token: ${{ secrets.GH_BOT_TOKEN }}
+          message: 'Update from ${{ github.sha }}'
