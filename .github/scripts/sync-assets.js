@@ -119,14 +119,73 @@ async function processRelease(repoName, release, maxNewAssets = 0, currentNewAss
  */
 async function processAsset(releaseDir, asset) {
   const assetPath = path.join(releaseDir, asset.name);
+  const maxSizeBytes = 50 * 1024 * 1024; // 50MB in bytes
+
+  // Check if asset is too large
+  if (asset.size > maxSizeBytes) {
+    const sizeMB = (asset.size / (1024 * 1024)).toFixed(2);
+    console.log(`Skipping ${asset.name} (${sizeMB}MB) - exceeds 50MB limit`);
+
+    // If the file already exists and is over the size limit, remove it
+    if (fileExists(assetPath)) {
+      console.log(`Removing existing oversized file: ${assetPath}`);
+      try {
+        const fs = require('fs');
+        fs.unlinkSync(assetPath);
+        // Also remove associated hash files
+        ['sha256', 'sha512', 'md5'].forEach(hashType => {
+          const hashFile = `${assetPath}.${hashType}`;
+          if (fileExists(hashFile)) {
+            fs.unlinkSync(hashFile);
+            console.log(`Removed hash file: ${hashFile}`);
+          }
+        });
+      } catch (error) {
+        console.error(`Failed to remove oversized file ${assetPath}: ${error.message}`);
+      }
+    }
+
+    return { downloaded: false, isNew: false };
+  }
 
   // Skip if asset already exists
   if (fileExists(assetPath)) {
     console.log(`Asset already exists: ${assetPath}`);
-    return { downloaded: true, isNew: false };
+
+    // Check if existing file is over size limit and remove it
+    try {
+      const fs = require('fs');
+      const stats = fs.statSync(assetPath);
+      if (stats.size > maxSizeBytes) {
+        const sizeMB = (stats.size / (1024 * 1024)).toFixed(2);
+        console.log(`Removing existing oversized file: ${assetPath} (${sizeMB}MB)`);
+        fs.unlinkSync(assetPath);
+        // Also remove associated hash files
+        ['sha256', 'sha512', 'md5'].forEach(hashType => {
+          const hashFile = `${assetPath}.${hashType}`;
+          if (fileExists(hashFile)) {
+            fs.unlinkSync(hashFile);
+            console.log(`Removed hash file: ${hashFile}`);
+          }
+        });
+        // Continue to download the asset since we removed the oversized one
+        // But first check again if the new asset would be over the limit
+        if (asset.size > maxSizeBytes) {
+          const assetSizeMB = (asset.size / (1024 * 1024)).toFixed(2);
+          console.log(`Not re-downloading ${asset.name} (${assetSizeMB}MB) - still exceeds 50MB limit`);
+          return { downloaded: false, isNew: false };
+        }
+      } else {
+        return { downloaded: true, isNew: false };
+      }
+    } catch (error) {
+      console.error(`Error checking existing file size for ${assetPath}: ${error.message}`);
+      return { downloaded: true, isNew: false };
+    }
   }
 
-  console.log(`Downloading: ${asset.name}`);
+  const sizeMB = (asset.size / (1024 * 1024)).toFixed(2);
+  console.log(`Downloading: ${asset.name} (${sizeMB}MB)`);
 
   try {
     await downloadAssetWithRetry(
