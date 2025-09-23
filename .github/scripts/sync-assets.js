@@ -10,7 +10,7 @@ const { downloadAssetWithRetry } = require('./download-utils');
 /**
  * Process a single repository and download its release assets
  */
-async function processRepository(github, context, repo, repositoryData, totalAssets) {
+async function processRepository(github, context, repo, repositoryData, totalAssets, isPullRequest = false, releaseLimit = null) {
   console.log(`Processing repository: ${repo.name}`);
 
   try {
@@ -26,7 +26,7 @@ async function processRepository(github, context, repo, repositoryData, totalAss
 
     if (publishedReleases.length === 0) {
       console.log(`No published releases found for ${repo.name}`);
-      return totalAssets;
+      return { totalAssets, processedReleases: 0 };
     }
 
     const repoData = {
@@ -34,7 +34,15 @@ async function processRepository(github, context, repo, repositoryData, totalAss
       releases: []
     };
 
+    let processedReleasesWithAssets = 0;
+
     for (const release of publishedReleases) {
+      // For pull requests, stop after processing the specified number of releases with assets
+      if (isPullRequest && releaseLimit && processedReleasesWithAssets >= releaseLimit) {
+        console.log(`PR mode: Reached limit of ${releaseLimit} releases with assets for ${repo.name}`);
+        break;
+      }
+
       const assetCount = await processRelease(repo.name, release);
       totalAssets += assetCount;
 
@@ -43,6 +51,7 @@ async function processRepository(github, context, repo, repositoryData, totalAss
           tag: release.tag_name,
           assetCount: assetCount
         });
+        processedReleasesWithAssets++;
       }
     }
 
@@ -54,7 +63,7 @@ async function processRepository(github, context, repo, repositoryData, totalAss
     console.error(`Error processing repository ${repo.name}: ${error.message}`);
   }
 
-  return totalAssets;
+  return { totalAssets, processedReleases: processedReleasesWithAssets };
 }
 
 /**
@@ -137,8 +146,12 @@ function generateRepositoryDataJson(repositoryData, totalAssets) {
 /**
  * Main function to sync all release assets
  */
-async function syncReleaseAssets(github, context) {
+async function syncReleaseAssets(github, context, isPullRequest = false) {
   console.log('Getting repositories from organization...');
+
+  if (isPullRequest) {
+    console.log('Running in pull request mode - limiting to 2 releases with assets per repository');
+  }
 
   // Get all repositories with pagination
   const repos = await github.paginate(github.rest.repos.listForOrg, {
@@ -151,16 +164,31 @@ async function syncReleaseAssets(github, context) {
 
   const repositoryData = [];
   let totalAssets = 0;
+  let totalProcessedReleases = 0;
 
   // Process each repository
   for (const repo of repos) {
-    totalAssets = await processRepository(github, context, repo, repositoryData, totalAssets);
+    const result = await processRepository(
+      github,
+      context,
+      repo,
+      repositoryData,
+      totalAssets,
+      isPullRequest,
+      isPullRequest ? 2 : null
+    );
+    totalAssets = result.totalAssets;
+    totalProcessedReleases += result.processedReleases;
   }
 
   // Generate repository data JSON for the index.html
   generateRepositoryDataJson(repositoryData, totalAssets);
 
-  console.log(`Processed ${repositoryData.length} repositories with assets`);
+  if (isPullRequest) {
+    console.log(`PR mode: Processed ${repositoryData.length} repositories with ${totalProcessedReleases} releases containing assets`);
+  } else {
+    console.log(`Processed ${repositoryData.length} repositories with assets`);
+  }
 }
 
 module.exports = {
