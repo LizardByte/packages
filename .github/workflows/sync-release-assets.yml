@@ -1,0 +1,147 @@
+---
+name: Sync Release Assets
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 * * * *'
+
+jobs:
+  sync-assets:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GH_BOT_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "${{ secrets.GH_BOT_NAME }}"
+          git config --global user.email "${{ secrets.GH_BOT_EMAIL }}"
+
+      - name: Create or checkout dist branch
+        run: |
+          if git rev-parse --verify origin/dist >/dev/null 2>&1; then
+            git checkout dist
+          else
+            git checkout --orphan dist
+            git rm -rf .
+            echo "# Release Assets" > README.md
+            git add README.md
+            git commit -m "Initialize dist branch"
+          fi
+
+      - name: Get organization repositories
+        id: get-repos
+        run: |
+          echo "Getting repositories from LizardByte organization..."
+
+          # Get all repositories in the organization
+          repos=$(curl -s -H "Authorization: token ${{ secrets.GH_BOT_TOKEN }}" \
+            "https://api.github.com/orgs/LizardByte/repos?per_page=100" | \
+            jq -r '.[].name' | grep -v "^$")
+
+          echo "Found repositories:"
+          echo "${repos}"
+
+          # Save repos to file for processing
+          echo "${repos}" > repos.txt
+
+      - name: Download release assets
+        run: |
+          ORG="${{ github.repository_owner }}"
+
+          while IFS= read -r repo; do
+            if [ -z "${repo}" ]; then
+              continue
+            fi
+
+            echo "Processing repository: ${repo}"
+
+            # Get releases for the repository
+            releases=$(curl -s -H "Authorization: token ${{ secrets.GH_BOT_TOKEN }}" \
+              "https://api.github.com/repos/$ORG/$repo/releases" | \
+              jq -r '.[] | select(.draft == false and .prerelease == false) | "\(.tag_name)|\(.id)"')
+
+            if [ -z "${releases}" ]; then
+              echo "No releases found for $repo"
+              continue
+            fi
+
+            echo "${releases}" | while IFS='|' read -r tag_name release_id; do
+              if [ -z "${tag_name}" ] || [ -z "${release_id}" ]; then
+                continue
+              fi
+
+              echo "Processing release: ${tag_name}"
+
+              # Create directory structure
+              release_dir="${repo}/${tag_name}"
+              mkdir -p "${release_dir}"
+
+              # Get assets for this release
+              assets=$(curl -s -H "Authorization: token ${{ secrets.GH_BOT_TOKEN }}" \
+                "https://api.github.com/repos/$ORG/$repo/releases/$release_id" | \
+                jq -r '.assets[] | "\(.name)|\(.browser_download_url)"')
+
+              if [ -z "${assets}" ]; then
+                echo "No assets found for release ${tag_name}"
+                continue
+              fi
+
+              echo "${assets}" | while IFS='|' read -r asset_name download_url; do
+                if [ -z "${asset_name}" ] || [ -z "${download_url}" ]; then
+                  continue
+                fi
+
+                asset_path="${release_dir}/${asset_name}"
+                if [ -f "${asset_path}" ]; then
+                  echo "Asset already exists: ${asset_path}"
+                  continue
+                fi
+
+                echo "Downloading: ${asset_name}"
+                curl -s -L -H "Authorization: token ${{ secrets.GH_BOT_TOKEN }}" \
+                  -o "$asset_path" "${download_url}"
+
+                if [ -f "${asset_path}" ]; then
+                  echo "Successfully downloaded: ${asset_path}"
+                  echo "Generating hash files for: ${asset_name}"
+                  sha256sum "${asset_path}" | cut -d' ' -f1 > "${asset_path}.sha256"
+                  sha512sum "${asset_path}" | cut -d' ' -f1 > "${asset_path}.sha512"
+                  md5sum "${asset_path}" | cut -d' ' -f1 > "${asset_path}.md5"
+                  echo "Hash files created for: ${asset_name}"
+                else
+                  echo "Failed to download: ${asset_name}"
+                fi
+              done
+            done
+          done < repos.txt
+
+      - name: Commit and push changes
+        run: |
+          # Check if there are any changes
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "Changes detected, committing..."
+
+            # Add all changes
+            git add .
+
+            # Create commit message with timestamp
+            commit_msg="Update release assets - $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+            git commit -m "${commit_msg}"
+
+            # Push changes
+            git push origin dist
+
+            echo "Changes committed and pushed to dist branch"
+          else
+            echo "No changes detected, nothing to commit"
+          fi
