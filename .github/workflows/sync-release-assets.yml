@@ -35,9 +35,12 @@ jobs:
 
       - name: Create or checkout dist branch into dist directory
         run: |
+          git fetch origin
           if git rev-parse --verify origin/dist >/dev/null 2>&1; then
             echo "Dist branch exists, checking it out"
             git worktree add dist origin/dist
+            cd dist
+            git pull origin dist
           else
             echo "Dist branch doesn't exist, creating new one"
             git worktree add --orphan dist
@@ -87,9 +90,12 @@ jobs:
 
       - name: Create or checkout gh-pages branch into gh-pages directory
         run: |
+          git fetch origin
           if git rev-parse --verify origin/gh-pages >/dev/null 2>&1; then
             echo "gh-pages branch exists, checking it out"
             git worktree add gh-pages origin/gh-pages
+            cd gh-pages
+            git pull origin gh-pages
           else
             echo "gh-pages branch doesn't exist, creating new one"
             git worktree add --orphan gh-pages
