@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LizardByte Release Assets</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>LizardByte Release Assets</h1>
+            <p class="subtitle">Centralized storage for all release assets from LizardByte repositories</p>
+        </header>
+
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Search repositories and releases...">
+        </div>
+
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-number" id="repoCount">-</div>
+                <div class="stat-label">Repositories</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number" id="releaseCount">-</div>
+                <div class="stat-label">Releases</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number" id="assetCount">-</div>
+                <div class="stat-label">Assets</div>
+            </div>
+        </div>
+
+        <div class="repository-grid" id="repositoryGrid">
+            <div class="no-results">Loading repository data...</div>
+        </div>
+
+        <div class="last-updated" id="lastUpdated">
+            Last updated: <span id="updateTime">-</span>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
