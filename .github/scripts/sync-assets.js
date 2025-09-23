@@ -13,6 +13,8 @@ const { downloadAssetWithRetry } = require('./download-utils');
 async function processRepository(github, context, repo, repositoryData, totalAssets, isPullRequest = false, releaseLimit = null) {
   console.log(`Processing repository: ${repo.name}`);
 
+  let processedReleasesWithAssets = 0;
+
   try {
     // Get releases for the repository with pagination
     const releases = await github.paginate(github.rest.repos.listReleases, {
@@ -33,8 +35,6 @@ async function processRepository(github, context, repo, repositoryData, totalAss
       name: repo.name,
       releases: []
     };
-
-    let processedReleasesWithAssets = 0;
 
     for (const release of publishedReleases) {
       // For pull requests, stop after processing the specified number of releases with assets
