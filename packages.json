@@ -1,6 +1,123 @@
 {
-  "lastUpdated": "2025-09-24T07:17:13.005Z",
+  "lastUpdated": "2025-09-24T08:18:00.282Z",
   "repositories": [
+    {
+      "name": "GSMS",
+      "releases": [
+        {
+          "tag": "v2024.1117.145",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.516.191906",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.512.24444",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.512.23938",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.512.23329",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.512.22830",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.512.22125",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.512.21554",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.409.21558",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.409.15624",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.409.13335",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.311.175546",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.311.172846",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.202.205656",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.106.223644",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1219.224553",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1215.225411",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1211.152658",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1211.141536",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1210.50510",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1210.45321",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1207.150703",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1204.235550",
+          "assetCount": 1
+        },
+        {
+          "tag": "v0.3.1",
+          "assetCount": 1
+        },
+        {
+          "tag": "v0.3.0",
+          "assetCount": 1
+        },
+        {
+          "tag": "v0.2.1",
+          "assetCount": 1
+        },
+        {
+          "tag": "v0.2.0",
+          "assetCount": 1
+        },
+        {
+          "tag": "v0.1.0",
+          "assetCount": 1
+        }
+      ]
+    },
     {
       "name": "plexhints",
       "releases": [
@@ -386,6 +503,51 @@
       ]
     },
     {
+      "name": "Themerr-jellyfin",
+      "releases": [
+        {
+          "tag": "v2024.523.2124.32",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.519.1836.29",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.519.1512.33",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.518.2054.48",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.518.2043.13",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.518.2031.24",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.518.2019.25",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.518.1833.47",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.518.1505.3",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.515.2109.23",
+          "assetCount": 1
+        }
+      ]
+    },
+    {
       "name": "Themerr-plex",
       "releases": [
         {
@@ -639,13 +801,61 @@
         {
           "tag": "v0.1.4",
           "assetCount": 1
+        },
+        {
+          "tag": "v0.1.3",
+          "assetCount": 1
+        },
+        {
+          "tag": "v0.1.2",
+          "assetCount": 1
+        },
+        {
+          "tag": "v0.1.1",
+          "assetCount": 1
+        },
+        {
+          "tag": "v0.1.0",
+          "assetCount": 1
+        },
+        {
+          "tag": "v0.0.8",
+          "assetCount": 1
+        },
+        {
+          "tag": "v0.0.7",
+          "assetCount": 1
+        },
+        {
+          "tag": "v0.0.6",
+          "assetCount": 1
+        },
+        {
+          "tag": "v0.0.5",
+          "assetCount": 1
+        },
+        {
+          "tag": "v0.0.4",
+          "assetCount": 1
+        },
+        {
+          "tag": "v0.0.3",
+          "assetCount": 1
+        },
+        {
+          "tag": "v0.0.2",
+          "assetCount": 1
+        },
+        {
+          "tag": "v0.0.1",
+          "assetCount": 1
         }
       ]
     }
   ],
   "stats": {
-    "totalRepositories": 5,
-    "totalReleases": 154,
-    "totalAssets": 600
+    "totalRepositories": 7,
+    "totalReleases": 204,
+    "totalAssets": 650
   }
 }
