@@ -103,7 +103,7 @@ class UIManager {
      */
     renderRepositories(repos) {
         if (repos.length === 0) {
-            this.repositoryGrid.innerHTML = '<div class="col-12 text-center text-muted fst-italic py-5">No repositories found.</div>';
+            this.repositoryGrid.innerHTML = '<div class="col-12 text-center fst-italic py-5">No repositories found.</div>';
             return;
         }
 
@@ -148,7 +148,7 @@ class UIManager {
      * Show loading state
      */
     showLoading() {
-        this.repositoryGrid.innerHTML = '<div class="col-12 text-center text-muted fst-italic py-5">Loading repository data...</div>';
+        this.repositoryGrid.innerHTML = '<div class="col-12 text-center fst-italic py-5">Loading repository data...</div>';
         this.repoCountElement.textContent = '-';
         this.releaseCountElement.textContent = '-';
         this.assetCountElement.textContent = '-';

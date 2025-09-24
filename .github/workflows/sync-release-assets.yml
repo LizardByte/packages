@@ -74,15 +74,15 @@ jobs:
           script: |
             // Import the packages generation module
             const { generatePackagesJson, writePackagesJson } = require('./.github/scripts/generate-packages.js');
-            
+
             console.log('Generating packages.json from dist directory...');
-            
+
             // Change to dist directory
             process.chdir('./dist');
-            
+
             // Generate the packages data
             const packagesData = generatePackagesJson('.');
-            
+
             // Write the packages.json file
             writePackagesJson(packagesData, './packages.json');
 
