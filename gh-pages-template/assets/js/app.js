@@ -109,8 +109,8 @@ class UIManager {
 
         this.repositoryGrid.innerHTML = repos.map(repo => `
             <div class="col-lg-4 col-md-6 mb-4" data-repo="${repo.name.toLowerCase()}">
-                <div class="card h-100">
-                    <div class="card-body">
+                <div class="card h-100 shadow border-0 rounded-0">
+                    <div class="card-body text-white p-4 rounded-0">
                         <h5 class="card-title text-primary mb-3">${repo.name}</h5>
                         <ul class="list-group list-group-flush">
                             ${repo.releases ? repo.releases.map(release => `
