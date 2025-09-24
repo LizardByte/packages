@@ -1,8 +1,9 @@
 {
-  "lastUpdated": "2025-09-24T16:16:11.960Z",
+  "lastUpdated": "2025-09-24T17:03:11.355Z",
   "repositories": [
     {
       "name": "GSMS",
+      "archived": false,
       "releases": [
         {
           "tag": "v2024.1117.145",
@@ -120,6 +121,7 @@
     },
     {
       "name": "libdisplaydevice",
+      "archived": false,
       "releases": [
         {
           "tag": "v2025.411.113543",
@@ -145,6 +147,7 @@
     },
     {
       "name": "pacman-repo",
+      "archived": false,
       "releases": [
         {
           "tag": "stable",
@@ -154,6 +157,7 @@
     },
     {
       "name": "pacman-repo-builder",
+      "archived": false,
       "releases": [
         {
           "tag": "v2025.612.130053",
@@ -167,6 +171,7 @@
     },
     {
       "name": "plexhints",
+      "archived": false,
       "releases": [
         {
           "tag": "v2024.809.14117",
@@ -332,6 +337,7 @@
     },
     {
       "name": "PlexyGlass",
+      "archived": false,
       "releases": [
         {
           "tag": "v2024.419.4845",
@@ -405,6 +411,7 @@
     },
     {
       "name": "RetroArcher.dats",
+      "archived": false,
       "releases": [
         {
           "tag": "Nightly",
@@ -414,6 +421,7 @@
     },
     {
       "name": "Sunshine",
+      "archived": false,
       "releases": [
         {
           "tag": "v2025.923.33222",
@@ -551,6 +559,7 @@
     },
     {
       "name": "Themerr-jellyfin",
+      "archived": false,
       "releases": [
         {
           "tag": "v2024.523.2124.32",
@@ -908,6 +917,7 @@
     },
     {
       "name": "Themerr-kodi",
+      "archived": false,
       "releases": [
         {
           "tag": "v2024.419.180955",
@@ -1049,6 +1059,7 @@
     },
     {
       "name": "Themerr-plex",
+      "archived": false,
       "releases": [
         {
           "tag": "v2024.813.13709",
