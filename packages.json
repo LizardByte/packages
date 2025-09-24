@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-09-24T06:19:03.625Z",
+  "lastUpdated": "2025-09-24T07:17:13.005Z",
   "repositories": [
     {
       "name": "plexhints",
@@ -439,13 +439,213 @@
         {
           "tag": "v2024.315.175317",
           "assetCount": 1
+        },
+        {
+          "tag": "v2024.315.172826",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.315.155441",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.315.153245",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.315.151050",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.315.142800",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.315.140425",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.314.145221",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.314.141850",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.314.134829",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.310.205454",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.310.200314",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.310.155104",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.310.41010",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.310.31155",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.229.20847",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.129.25629",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.128.230153",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.128.174645",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.128.172544",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.122.152845",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.120.224339",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.117.210008",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.117.1621",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1227.133216",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1222.31229",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1222.25120",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1220.3105",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1219.202615",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1218.2705",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1212.151142",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1212.144152",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1212.142407",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1212.140639",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1212.134359",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1211.161225",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1211.2038",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1210.180250",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1210.174738",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1210.172610",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1210.170540",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1210.154314",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1210.150614",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1210.42905",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1209.42207",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1207.142457",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1206.5554",
+          "assetCount": 1
+        },
+        {
+          "tag": "v0.3.1",
+          "assetCount": 1
+        },
+        {
+          "tag": "v0.3.0",
+          "assetCount": 1
+        },
+        {
+          "tag": "v0.2.0",
+          "assetCount": 1
+        },
+        {
+          "tag": "v0.1.4",
+          "assetCount": 1
         }
       ]
     }
   ],
   "stats": {
     "totalRepositories": 5,
-    "totalReleases": 104,
-    "totalAssets": 550
+    "totalReleases": 154,
+    "totalAssets": 600
   }
 }
