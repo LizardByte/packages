@@ -193,24 +193,28 @@ class UIManager {
      */
     renderRepositories(repos) {
         if (repos.length === 0) {
-            this.repositoryGrid.innerHTML = '<div class="no-results">No repositories found.</div>';
+            this.repositoryGrid.innerHTML = '<div class="col-12 text-center text-muted fst-italic py-5">No repositories found.</div>';
             return;
         }
 
         this.repositoryGrid.innerHTML = repos.map(repo => `
-            <div class="repository-card" data-repo="${repo.name.toLowerCase()}">
-                <h3 class="repository-name">${repo.name}</h3>
-                <ul class="release-list">
-                    ${repo.releases.map(release => `
-                        <li class="release-item">
-                            <a href="https://github.com/${this.orgName}/packages/tree/dist/${repo.name}/${release.tag}"
-                               class="release-link" target="_blank" rel="noopener">
-                                <span class="release-tag">${release.tag}</span>
-                            </a>
-                            <span class="asset-count">${release.assetCount} assets</span>
-                        </li>
-                    `).join('')}
-                </ul>
+            <div class="col-lg-4 col-md-6 mb-4" data-repo="${repo.name.toLowerCase()}">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary mb-3">${repo.name}</h5>
+                        <ul class="list-group list-group-flush">
+                            ${repo.releases.map(release => `
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                    <a href="https://github.com/${this.orgName}/packages/tree/dist/${repo.name}/${release.tag}"
+                                       class="text-decoration-none fw-medium" target="_blank" rel="noopener">
+                                        ${release.tag}
+                                    </a>
+                                    <span class="badge bg-secondary rounded-pill">${release.assetCount}</span>
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                </div>
             </div>
         `).join('');
     }
@@ -234,7 +238,7 @@ class UIManager {
      * Show loading state
      */
     showLoading() {
-        this.repositoryGrid.innerHTML = '<div class="no-results">Loading repository data...</div>';
+        this.repositoryGrid.innerHTML = '<div class="col-12 text-center text-muted fst-italic py-5">Loading repository data...</div>';
         this.repoCountElement.textContent = '-';
         this.releaseCountElement.textContent = '-';
         this.assetCountElement.textContent = '-';

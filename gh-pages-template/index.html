@@ -1,46 +1,61 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LizardByte Release Assets</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <div class="container">
-        <header>
-            <h1>LizardByte Release Assets</h1>
-            <p class="subtitle">Centralized storage for all release assets from LizardByte repositories</p>
-        </header>
+---
+title: Packages
+subtitle: Centralized storage for release assets from LizardByte repositories
+layout: page
+full-width: true
+after-content:
+- donate.html
+- support.html
+css:
+- /assets/css/packages.css
+js:
+- /assets/js/app.js
+---
 
-        <div class="search-container">
-            <input type="text" id="searchInput" placeholder="Search repositories and releases...">
-        </div>
+<div class="container-fluid">
 
-        <div class="stats">
-            <div class="stat">
-                <div class="stat-number" id="repoCount">-</div>
-                <div class="stat-label">Repositories</div>
-            </div>
-            <div class="stat">
-                <div class="stat-number" id="releaseCount">-</div>
-                <div class="stat-label">Releases</div>
-            </div>
-            <div class="stat">
-                <div class="stat-number" id="assetCount">-</div>
-                <div class="stat-label">Assets</div>
-            </div>
-        </div>
-
-        <div class="repository-grid" id="repositoryGrid">
-            <div class="no-results">Loading repository data...</div>
-        </div>
-
-        <div class="last-updated" id="lastUpdated">
-            Last updated: <span id="updateTime">-</span>
+    <div class="row justify-content-center mb-4">
+        <div class="col-md-8 col-lg-6">
+            <input type="text" id="searchInput" class="form-control form-control-lg" placeholder="Search repositories and releases...">
         </div>
     </div>
 
-    <script src="app.js"></script>
-</body>
-</html>
+    <div class="row justify-content-center mb-4">
+        <div class="col-auto">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title text-primary" id="repoCount">-</h5>
+                    <p class="card-text">Repositories</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-auto">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title text-primary" id="releaseCount">-</h5>
+                    <p class="card-text">Releases</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-auto">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title text-primary" id="assetCount">-</h5>
+                    <p class="card-text">Assets</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" id="repositoryGrid">
+        <div class="col-12 text-center fst-italic py-5">Loading repository data...</div>
+    </div>
+
+    <div class="row justify-content-center mt-5">
+        <div class="col-auto">
+            <div class="border-top pt-3 text-muted small text-center">
+                Last updated: <span id="updateTime">-</span>
+            </div>
+        </div>
+    </div>
+</div>
