@@ -1,0 +1,65 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+# initial PR into macports: https://github.com/macports/macports-ports/pull/15143
+
+PortSystem               1.0
+PortGroup                cmake 1.1
+PortGroup                github 1.0
+PortGroup                boost 1.0
+
+name                     Sunshine
+version                  0.19.1
+revision                 0
+categories               multimedia emulators games
+platforms                darwin
+license                  GPL-3
+maintainers              @LizardByte
+description              Sunshine is a self-hosted game stream host for Moonlight.
+
+# long_description will not be split into multiple lines as it's configured by CMakeLists
+long_description         Offering low latency, cloud gaming server capabilities with support for AMD, Intel, and Nvidia GPUs for hardware encoding. Software encoding is also available. You can connect to Sunshine from any Moonlight client on a variety of devices. A web UI is provided to allow configuration, and client pairing, from your favorite web browser. Pair from the local server or any mobile device.
+homepage                 https://app.lizardbyte.dev
+master_sites             https://github.com/lizardbyte/sunshine/releases
+
+compiler.cxx_standard    2017
+fetch.type               git
+
+git.url                  https://github.com/LizardByte/Sunshine.git
+git.branch               d70d084f9fbb4e0150977a89d94937418a3ccf9c
+
+post-fetch {
+    system -W ${worksrcpath} "${git.cmd} submodule update --init --recursive"
+}
+
+depends_lib              port:avahi \
+                         port:curl \
+                         port:libopus \
+                         port:npm9 \
+                         port:pkgconfig
+
+boost.version            1.80
+
+configure.args           -DCMAKE_INSTALL_PREFIX=${prefix} \
+                         -DSUNSHINE_ASSETS_DIR=etc/sunshine/assets
+
+startupitem.create       yes
+startupitem.executable   "${prefix}/bin/{$name}"
+startupitem.location     LaunchDaemons
+startupitem.name         ${name}
+startupitem.netchange    yes
+
+platform darwin {
+    if { ${os.major} < 20 } {
+        # See: https://github.com/LizardByte/Sunshine/discussions/117#discussioncomment-2513494
+        notes-append "Port is limited to software encoding, when used with macOS releases prior to Big Sur."
+    }
+}
+
+pre-build {
+    system -W ${worksrcpath} "npm install"
+}
+
+notes-append "Run Sunshine by executing 'sunshine <path to user config>', e.g. 'sunshine ~/sunshine.conf' "
+notes-append "The config file will be created if it doesn't exist."
+notes-append "It is recommended to set a location for the apps file in the config."
+notes-append "See our documentation at 'https://docs.lizardbyte.dev/projects/sunshine/en/v0.19.1/' for further info."

@@ -1,0 +1,76 @@
+{
+  "lastUpdated": "2025-09-24T02:39:12.898Z",
+  "repositories": [
+    {
+      "name": "RetroArcher.dats",
+      "releases": [
+        {
+          "tag": "Nightly",
+          "assetCount": 6
+        }
+      ]
+    },
+    {
+      "name": "Sunshine",
+      "releases": [
+        {
+          "tag": "v2025.923.33222",
+          "assetCount": 19
+        },
+        {
+          "tag": "v2025.628.4510",
+          "assetCount": 15
+        },
+        {
+          "tag": "v2025.122.141614",
+          "assetCount": 15
+        },
+        {
+          "tag": "v2025.118.151840",
+          "assetCount": 15
+        },
+        {
+          "tag": "v0.23.1",
+          "assetCount": 16
+        },
+        {
+          "tag": "v0.23.0",
+          "assetCount": 16
+        },
+        {
+          "tag": "v0.22.2",
+          "assetCount": 21
+        },
+        {
+          "tag": "v0.22.1",
+          "assetCount": 21
+        },
+        {
+          "tag": "v0.22.0",
+          "assetCount": 23
+        },
+        {
+          "tag": "v0.21.0",
+          "assetCount": 22
+        },
+        {
+          "tag": "v0.20.0",
+          "assetCount": 21
+        },
+        {
+          "tag": "v0.19.1",
+          "assetCount": 20
+        },
+        {
+          "tag": "v0.19.0",
+          "assetCount": 20
+        }
+      ]
+    }
+  ],
+  "stats": {
+    "totalRepositories": 2,
+    "totalReleases": 14,
+    "totalAssets": 250
+  }
+}
