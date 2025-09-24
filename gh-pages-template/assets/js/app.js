@@ -111,7 +111,7 @@ class UIManager {
             <div class="col-lg-4 col-md-6 mb-4" data-repo="${repo.name.toLowerCase()}">
                 <div class="card h-100 shadow border-0 rounded-0">
                     <div class="card-body text-white p-4 rounded-0">
-                        <h5 class="card-title text-primary mb-3">${repo.name}</h5>
+                        <h5 class="card-title text-info mb-3">${repo.name}</h5>
                         <ul class="list-group list-group-flush">
                             ${repo.releases ? repo.releases.map(release => `
                                 <li class="list-group-item d-flex justify-content-between align-items-center px-0">
