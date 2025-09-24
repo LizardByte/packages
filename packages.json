@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-09-24T18:18:23.567Z",
+  "lastUpdated": "2025-09-24T19:13:07.549Z",
   "repositories": [
     {
       "name": "GSMS",
@@ -423,6 +423,10 @@
       "name": "Sunshine",
       "archived": false,
       "releases": [
+        {
+          "tag": "v2025.924.154138",
+          "assetCount": 19
+        },
         {
           "tag": "v2025.923.33222",
           "assetCount": 19
@@ -1366,7 +1370,7 @@
   ],
   "stats": {
     "totalRepositories": 11,
-    "totalReleases": 324,
-    "totalAssets": 788
+    "totalReleases": 325,
+    "totalAssets": 807
   }
 }
