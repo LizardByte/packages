@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-09-24T19:13:07.549Z",
+  "lastUpdated": "2025-09-24T20:16:32.221Z",
   "repositories": [
     {
       "name": "GSMS",
@@ -151,7 +151,7 @@
       "releases": [
         {
           "tag": "stable",
-          "assetCount": 14
+          "assetCount": 15
         }
       ]
     },
@@ -1371,6 +1371,6 @@
   "stats": {
     "totalRepositories": 11,
     "totalReleases": 325,
-    "totalAssets": 807
+    "totalAssets": 808
   }
 }
