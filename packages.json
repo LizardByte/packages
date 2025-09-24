@@ -1,6 +1,31 @@
 {
-  "lastUpdated": "2025-09-24T03:49:34.764Z",
+  "lastUpdated": "2025-09-24T04:15:39.188Z",
   "repositories": [
+    {
+      "name": "plexhints",
+      "releases": [
+        {
+          "tag": "v2024.809.14117",
+          "assetCount": 2
+        },
+        {
+          "tag": "v2024.726.1720",
+          "assetCount": 2
+        },
+        {
+          "tag": "v2024.725.1918",
+          "assetCount": 2
+        },
+        {
+          "tag": "v2024.715.173608",
+          "assetCount": 2
+        },
+        {
+          "tag": "v2024.521.1558",
+          "assetCount": 2
+        }
+      ]
+    },
     {
       "name": "RetroArcher.dats",
       "releases": [
@@ -111,14 +136,46 @@
         },
         {
           "tag": "v0.12.0",
-          "assetCount": 2
+          "assetCount": 6
+        },
+        {
+          "tag": "v0.11.1",
+          "assetCount": 4
+        },
+        {
+          "tag": "v0.10.1",
+          "assetCount": 5
+        },
+        {
+          "tag": "v0.10.0",
+          "assetCount": 5
+        },
+        {
+          "tag": "v0.9.0",
+          "assetCount": 4
+        },
+        {
+          "tag": "v0.8.0",
+          "assetCount": 5
+        },
+        {
+          "tag": "v0.7.7",
+          "assetCount": 5
+        },
+        {
+          "tag": "v0.7.1",
+          "assetCount": 4
+        },
+        {
+          "tag": "v0.7.0",
+          "assetCount": 4
         }
       ]
     }
   ],
   "stats": {
-    "totalRepositories": 2,
-    "totalReleases": 26,
-    "totalAssets": 400
+    "totalRepositories": 3,
+    "totalReleases": 39,
+    "totalAssets": 450
   }
 }
