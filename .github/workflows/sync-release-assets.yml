@@ -67,6 +67,25 @@ jobs:
             process.chdir('./dist');
             await syncReleaseAssets(github, context, isPullRequest, maxNewAssets);
 
+      - name: Generate packages.json
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ secrets.GH_BOT_TOKEN }}
+          script: |
+            // Import the packages generation module
+            const { generatePackagesJson, writePackagesJson } = require('./.github/scripts/generate-packages.js');
+            
+            console.log('Generating packages.json from dist directory...');
+            
+            // Change to dist directory
+            process.chdir('./dist');
+            
+            // Generate the packages data
+            const packagesData = generatePackagesJson('.');
+            
+            // Write the packages.json file
+            writePackagesJson(packagesData, './packages.json');
+
       - name: Commit and push changes
         if: github.event_name != 'pull_request'
         uses: actions-js/push@v1.5
