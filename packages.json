@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-09-24T02:39:12.898Z",
+  "lastUpdated": "2025-09-24T02:56:12.643Z",
   "repositories": [
     {
       "name": "RetroArcher.dats",
@@ -64,13 +64,25 @@
         {
           "tag": "v0.19.0",
           "assetCount": 20
+        },
+        {
+          "tag": "v0.18.4",
+          "assetCount": 20
+        },
+        {
+          "tag": "v0.18.3",
+          "assetCount": 20
+        },
+        {
+          "tag": "v0.18.2",
+          "assetCount": 10
         }
       ]
     }
   ],
   "stats": {
     "totalRepositories": 2,
-    "totalReleases": 14,
-    "totalAssets": 250
+    "totalReleases": 17,
+    "totalAssets": 300
   }
 }
