@@ -67,14 +67,22 @@ class RepositoryDataManager {
     }
 
     /**
-     * Filter repositories based on search term
+     * Filter repositories based on search term and archived status
      */
-    filterRepositories(searchTerm) {
-        if (!searchTerm) {
-            return this.repositoryData;
+    filterRepositories(searchTerm, showArchived = true) {
+        let filteredRepos = this.repositoryData;
+
+        // Filter by archived status first
+        if (!showArchived) {
+            filteredRepos = filteredRepos.filter(repo => !repo.archived);
         }
 
-        return this.repositoryData.filter(repo => {
+        // Then filter by search term if provided
+        if (!searchTerm) {
+            return filteredRepos;
+        }
+
+        return filteredRepos.filter(repo => {
             const repoMatch = repo.name.toLowerCase().includes(searchTerm.toLowerCase());
             const releaseMatch = repo.releases && repo.releases.some(release =>
                 release.tag.toLowerCase().includes(searchTerm.toLowerCase()));
@@ -157,32 +165,52 @@ class UIManager {
 }
 
 /**
- * Search Manager
- * Handles search functionality
+ * Filter Manager
+ * Handles search and archived repository filtering functionality
  */
-class SearchManager {
+class FilterManager {
     constructor(dataManager, uiManager) {
         this.dataManager = dataManager;
         this.uiManager = uiManager;
         this.searchInput = document.getElementById('searchInput');
-        this.initializeSearch();
+        this.archivedToggle = document.getElementById('showArchivedToggle');
+        this.initializeFilters();
     }
 
     /**
-     * Initialize search functionality
+     * Initialize filter functionality
      */
-    initializeSearch() {
+    initializeFilters() {
+        // Search input handler
         this.searchInput.addEventListener('input', (e) => {
-            this.performSearch(e.target.value);
+            this.applyFilters();
+        });
+
+        // Archived toggle handler
+        this.archivedToggle.addEventListener('change', (e) => {
+            this.applyFilters();
         });
     }
 
     /**
-     * Perform search and update UI
+     * Apply all filters and update UI
      */
-    performSearch(searchTerm) {
-        const filteredRepos = this.dataManager.filterRepositories(searchTerm);
+    applyFilters() {
+        const searchTerm = this.searchInput.value;
+        const showArchived = this.archivedToggle.checked;
+
+        const filteredRepos = this.dataManager.filterRepositories(searchTerm, showArchived);
         this.uiManager.renderRepositories(filteredRepos);
+        this.uiManager.updateStats(filteredRepos);
+    }
+
+    /**
+     * Reset all filters
+     */
+    resetFilters() {
+        this.searchInput.value = '';
+        this.archivedToggle.checked = true;
+        this.applyFilters();
     }
 }
 
@@ -194,7 +222,7 @@ class LizardByteAssetsApp {
     constructor() {
         this.dataManager = new RepositoryDataManager();
         this.uiManager = new UIManager();
-        this.searchManager = null;
+        this.filterManager = null;
     }
 
     /**
@@ -213,8 +241,8 @@ class LizardByteAssetsApp {
             this.uiManager.renderRepositories(repositories);
             this.uiManager.updateStats(repositories);
 
-            // Initialize search functionality
-            this.searchManager = new SearchManager(this.dataManager, this.uiManager);
+            // Initialize filter functionality
+            this.filterManager = new FilterManager(this.dataManager, this.uiManager);
 
             console.log(`Loaded ${repositories.length} repositories`);
 
