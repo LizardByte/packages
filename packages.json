@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-09-24T10:14:19.585Z",
+  "lastUpdated": "2025-09-24T11:11:35.704Z",
   "repositories": [
     {
       "name": "GSMS",
@@ -114,6 +114,53 @@
         },
         {
           "tag": "v0.1.0",
+          "assetCount": 1
+        }
+      ]
+    },
+    {
+      "name": "libdisplaydevice",
+      "releases": [
+        {
+          "tag": "v2025.411.113543",
+          "assetCount": 2
+        },
+        {
+          "tag": "v2025.115.133852",
+          "assetCount": 2
+        },
+        {
+          "tag": "v2024.1217.151047",
+          "assetCount": 2
+        },
+        {
+          "tag": "v2024.1116.222346",
+          "assetCount": 2
+        },
+        {
+          "tag": "v2024.807.213004",
+          "assetCount": 2
+        }
+      ]
+    },
+    {
+      "name": "pacman-repo",
+      "releases": [
+        {
+          "tag": "stable",
+          "assetCount": 14
+        }
+      ]
+    },
+    {
+      "name": "pacman-repo-builder",
+      "releases": [
+        {
+          "tag": "v2025.612.130053",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.1102.214158",
           "assetCount": 1
         }
       ]
@@ -949,6 +996,54 @@
         {
           "tag": "v2024.106.223523",
           "assetCount": 1
+        },
+        {
+          "tag": "v2024.106.222441",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.106.221058",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1230.170700",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1230.164741",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1230.162521",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1230.142040",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1230.140227",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1229.203620",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1229.23012",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1229.15736",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1229.14458",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1229.11357",
+          "assetCount": 1
         }
       ]
     },
@@ -1259,8 +1354,8 @@
     }
   ],
   "stats": {
-    "totalRepositories": 8,
-    "totalReleases": 304,
-    "totalAssets": 750
+    "totalRepositories": 11,
+    "totalReleases": 324,
+    "totalAssets": 788
   }
 }
