@@ -34,6 +34,7 @@ async function processRepository(github, context, repo, repositoryData, totalAss
 
     const repoData = {
       name: repo.name,
+      archived: repo.archived,
       releases: []
     };
 

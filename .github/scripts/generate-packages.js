@@ -93,6 +93,7 @@ function scanRepositoryDirectory(repoPath) {
         if (releases.length > 0) {
             return {
                 name: repoName,
+                archived: false, // Default to false, will be updated by sync process
                 releases: releases
             };
         }
