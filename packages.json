@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-09-24T05:13:44.224Z",
+  "lastUpdated": "2025-09-24T06:19:03.625Z",
   "repositories": [
     {
       "name": "plexhints",
@@ -123,6 +123,119 @@
         {
           "tag": "v2023.1210.163618",
           "assetCount": 2
+        },
+        {
+          "tag": "v2023.1210.160651",
+          "assetCount": 2
+        },
+        {
+          "tag": "v2023.1210.152302",
+          "assetCount": 2
+        },
+        {
+          "tag": "v2023.1210.144619",
+          "assetCount": 2
+        },
+        {
+          "tag": "v2023.1210.42152",
+          "assetCount": 2
+        },
+        {
+          "tag": "v2023.1209.13549",
+          "assetCount": 2
+        },
+        {
+          "tag": "v2023.1207.145935",
+          "assetCount": 2
+        },
+        {
+          "tag": "v2023.1201.11810",
+          "assetCount": 2
+        },
+        {
+          "tag": "v2023.1201.5840",
+          "assetCount": 2
+        },
+        {
+          "tag": "v2023.1201.3000",
+          "assetCount": 2
+        },
+        {
+          "tag": "v2023.1201.18",
+          "assetCount": 2
+        }
+      ]
+    },
+    {
+      "name": "PlexyGlass",
+      "releases": [
+        {
+          "tag": "v2024.419.4845",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.326.222440",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.326.220925",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.310.200323",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1220.709",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1218.5550",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1211.195733",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1211.161152",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1210.222444",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1210.181502",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1210.175653",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2023.1207.232206",
+          "assetCount": 1
+        },
+        {
+          "tag": "v0.0.5",
+          "assetCount": 1
+        },
+        {
+          "tag": "v0.0.4",
+          "assetCount": 1
+        },
+        {
+          "tag": "v0.0.3",
+          "assetCount": 1
+        },
+        {
+          "tag": "v0.0.2",
+          "assetCount": 1
+        },
+        {
+          "tag": "v0.0.1",
+          "assetCount": 1
         }
       ]
     },
@@ -271,11 +384,68 @@
           "assetCount": 4
         }
       ]
+    },
+    {
+      "name": "Themerr-plex",
+      "releases": [
+        {
+          "tag": "v2024.813.13709",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.717.231002",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.419.413",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.321.173613",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.321.132311",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.320.141633",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.320.132907",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.320.105541",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.318.143424",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.317.40741",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.316.172728",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.315.220534",
+          "assetCount": 1
+        },
+        {
+          "tag": "v2024.315.175317",
+          "assetCount": 1
+        }
+      ]
     }
   ],
   "stats": {
-    "totalRepositories": 3,
-    "totalReleases": 64,
-    "totalAssets": 500
+    "totalRepositories": 5,
+    "totalReleases": 104,
+    "totalAssets": 550
   }
 }
