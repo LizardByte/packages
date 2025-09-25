@@ -1,0 +1,1348 @@
+[
+  {
+    "name": "Sunshine",
+    "archived": false,
+    "releases": [
+      {
+        "tag": "v2025.924.154138",
+        "assetCount": 19
+      },
+      {
+        "tag": "v2025.923.33222",
+        "assetCount": 19
+      },
+      {
+        "tag": "v2025.628.4510",
+        "assetCount": 15
+      },
+      {
+        "tag": "v2025.122.141614",
+        "assetCount": 15
+      },
+      {
+        "tag": "v2025.118.151840",
+        "assetCount": 15
+      },
+      {
+        "tag": "v0.23.1",
+        "assetCount": 16
+      },
+      {
+        "tag": "v0.23.0",
+        "assetCount": 16
+      },
+      {
+        "tag": "v0.22.2",
+        "assetCount": 21
+      },
+      {
+        "tag": "v0.22.1",
+        "assetCount": 21
+      },
+      {
+        "tag": "v0.22.0",
+        "assetCount": 23
+      },
+      {
+        "tag": "v0.21.0",
+        "assetCount": 22
+      },
+      {
+        "tag": "v0.20.0",
+        "assetCount": 21
+      },
+      {
+        "tag": "v0.19.1",
+        "assetCount": 20
+      },
+      {
+        "tag": "v0.19.0",
+        "assetCount": 20
+      },
+      {
+        "tag": "v0.18.4",
+        "assetCount": 20
+      },
+      {
+        "tag": "v0.18.3",
+        "assetCount": 20
+      },
+      {
+        "tag": "v0.18.2",
+        "assetCount": 18
+      },
+      {
+        "tag": "v0.18.1",
+        "assetCount": 18
+      },
+      {
+        "tag": "v0.18.0",
+        "assetCount": 18
+      },
+      {
+        "tag": "v0.17.0",
+        "assetCount": 12
+      },
+      {
+        "tag": "v0.16.0",
+        "assetCount": 12
+      },
+      {
+        "tag": "v0.15.0",
+        "assetCount": 11
+      },
+      {
+        "tag": "v0.14.1",
+        "assetCount": 8
+      },
+      {
+        "tag": "v0.14.0",
+        "assetCount": 5
+      },
+      {
+        "tag": "v0.13.0",
+        "assetCount": 6
+      },
+      {
+        "tag": "v0.12.0",
+        "assetCount": 6
+      },
+      {
+        "tag": "v0.11.1",
+        "assetCount": 4
+      },
+      {
+        "tag": "v0.10.1",
+        "assetCount": 5
+      },
+      {
+        "tag": "v0.10.0",
+        "assetCount": 5
+      },
+      {
+        "tag": "v0.9.0",
+        "assetCount": 4
+      },
+      {
+        "tag": "v0.8.0",
+        "assetCount": 5
+      },
+      {
+        "tag": "v0.7.7",
+        "assetCount": 5
+      },
+      {
+        "tag": "v0.7.1",
+        "assetCount": 4
+      },
+      {
+        "tag": "v0.7.0",
+        "assetCount": 4
+      }
+    ]
+  },
+  {
+    "name": "plexhints",
+    "archived": true,
+    "releases": [
+      {
+        "tag": "v2024.809.14117",
+        "assetCount": 2
+      },
+      {
+        "tag": "v2024.726.1720",
+        "assetCount": 2
+      },
+      {
+        "tag": "v2024.725.1918",
+        "assetCount": 2
+      },
+      {
+        "tag": "v2024.715.173608",
+        "assetCount": 2
+      },
+      {
+        "tag": "v2024.521.1558",
+        "assetCount": 2
+      },
+      {
+        "tag": "v2024.516.124516",
+        "assetCount": 2
+      },
+      {
+        "tag": "v2024.516.24056",
+        "assetCount": 2
+      },
+      {
+        "tag": "v2024.516.22512",
+        "assetCount": 2
+      },
+      {
+        "tag": "v2024.516.21511",
+        "assetCount": 2
+      },
+      {
+        "tag": "v2024.516.14140",
+        "assetCount": 2
+      },
+      {
+        "tag": "v2024.516.12827",
+        "assetCount": 2
+      },
+      {
+        "tag": "v2024.515.233942",
+        "assetCount": 2
+      },
+      {
+        "tag": "v2024.512.13207",
+        "assetCount": 2
+      },
+      {
+        "tag": "v2024.409.30106",
+        "assetCount": 2
+      },
+      {
+        "tag": "v2024.229.193202",
+        "assetCount": 2
+      },
+      {
+        "tag": "v2024.229.190102",
+        "assetCount": 2
+      },
+      {
+        "tag": "v2024.229.165026",
+        "assetCount": 2
+      },
+      {
+        "tag": "v2024.129.31313",
+        "assetCount": 2
+      },
+      {
+        "tag": "v2024.127.5219",
+        "assetCount": 2
+      },
+      {
+        "tag": "v2024.101.155545",
+        "assetCount": 2
+      },
+      {
+        "tag": "v2023.1226.203406",
+        "assetCount": 2
+      },
+      {
+        "tag": "v2023.1226.160520",
+        "assetCount": 2
+      },
+      {
+        "tag": "v2023.1226.152440",
+        "assetCount": 2
+      },
+      {
+        "tag": "v2023.1226.144549",
+        "assetCount": 2
+      },
+      {
+        "tag": "v2023.1226.140756",
+        "assetCount": 2
+      },
+      {
+        "tag": "v2023.1226.133747",
+        "assetCount": 2
+      },
+      {
+        "tag": "v2023.1225.152442",
+        "assetCount": 2
+      },
+      {
+        "tag": "v2023.1219.225232",
+        "assetCount": 2
+      },
+      {
+        "tag": "v2023.1211.160853",
+        "assetCount": 2
+      },
+      {
+        "tag": "v2023.1210.163618",
+        "assetCount": 2
+      },
+      {
+        "tag": "v2023.1210.160651",
+        "assetCount": 2
+      },
+      {
+        "tag": "v2023.1210.152302",
+        "assetCount": 2
+      },
+      {
+        "tag": "v2023.1210.144619",
+        "assetCount": 2
+      },
+      {
+        "tag": "v2023.1210.42152",
+        "assetCount": 2
+      },
+      {
+        "tag": "v2023.1209.13549",
+        "assetCount": 2
+      },
+      {
+        "tag": "v2023.1207.145935",
+        "assetCount": 2
+      },
+      {
+        "tag": "v2023.1201.11810",
+        "assetCount": 2
+      },
+      {
+        "tag": "v2023.1201.5840",
+        "assetCount": 2
+      },
+      {
+        "tag": "v2023.1201.3000",
+        "assetCount": 2
+      },
+      {
+        "tag": "v2023.1201.18",
+        "assetCount": 2
+      }
+    ]
+  },
+  {
+    "name": "PlexyGlass",
+    "archived": true,
+    "releases": [
+      {
+        "tag": "v2024.419.4845",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.326.222440",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.326.220925",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.310.200323",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1220.709",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1218.5550",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1211.195733",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1211.161152",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1210.222444",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1210.181502",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1210.175653",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1207.232206",
+        "assetCount": 1
+      },
+      {
+        "tag": "v0.0.5",
+        "assetCount": 1
+      },
+      {
+        "tag": "v0.0.4",
+        "assetCount": 1
+      },
+      {
+        "tag": "v0.0.3",
+        "assetCount": 1
+      },
+      {
+        "tag": "v0.0.2",
+        "assetCount": 1
+      },
+      {
+        "tag": "v0.0.1",
+        "assetCount": 1
+      }
+    ]
+  },
+  {
+    "name": "Themerr-plex",
+    "archived": true,
+    "releases": [
+      {
+        "tag": "v2024.813.13709",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.717.231002",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.419.413",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.321.173613",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.321.132311",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.320.141633",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.320.132907",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.320.105541",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.318.143424",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.317.40741",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.316.172728",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.315.220534",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.315.175317",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.315.172826",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.315.155441",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.315.153245",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.315.151050",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.315.142800",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.315.140425",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.314.145221",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.314.141850",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.314.134829",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.310.205454",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.310.200314",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.310.155104",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.310.41010",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.310.31155",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.229.20847",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.129.25629",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.128.230153",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.128.174645",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.128.172544",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.122.152845",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.120.224339",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.117.210008",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.117.1621",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1227.133216",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1222.31229",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1222.25120",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1220.3105",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1219.202615",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1218.2705",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1212.151142",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1212.144152",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1212.142407",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1212.140639",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1212.134359",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1211.161225",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1211.2038",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1210.180250",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1210.174738",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1210.172610",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1210.170540",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1210.154314",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1210.150614",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1210.42905",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1209.42207",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1207.142457",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1206.5554",
+        "assetCount": 1
+      },
+      {
+        "tag": "v0.3.1",
+        "assetCount": 1
+      },
+      {
+        "tag": "v0.3.0",
+        "assetCount": 1
+      },
+      {
+        "tag": "v0.2.0",
+        "assetCount": 1
+      },
+      {
+        "tag": "v0.1.4",
+        "assetCount": 1
+      },
+      {
+        "tag": "v0.1.3",
+        "assetCount": 1
+      },
+      {
+        "tag": "v0.1.2",
+        "assetCount": 1
+      },
+      {
+        "tag": "v0.1.1",
+        "assetCount": 1
+      },
+      {
+        "tag": "v0.1.0",
+        "assetCount": 1
+      },
+      {
+        "tag": "v0.0.8",
+        "assetCount": 1
+      },
+      {
+        "tag": "v0.0.7",
+        "assetCount": 1
+      },
+      {
+        "tag": "v0.0.6",
+        "assetCount": 1
+      },
+      {
+        "tag": "v0.0.5",
+        "assetCount": 1
+      },
+      {
+        "tag": "v0.0.4",
+        "assetCount": 1
+      },
+      {
+        "tag": "v0.0.3",
+        "assetCount": 1
+      },
+      {
+        "tag": "v0.0.2",
+        "assetCount": 1
+      },
+      {
+        "tag": "v0.0.1",
+        "assetCount": 1
+      }
+    ]
+  },
+  {
+    "name": "GSMS",
+    "archived": true,
+    "releases": [
+      {
+        "tag": "v2024.1117.145",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.516.191906",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.512.24444",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.512.23938",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.512.23329",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.512.22830",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.512.22125",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.512.21554",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.409.21558",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.409.15624",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.409.13335",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.311.175546",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.311.172846",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.202.205656",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.106.223644",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1219.224553",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1215.225411",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1211.152658",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1211.141536",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1210.50510",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1210.45321",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1207.150703",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1204.235550",
+        "assetCount": 1
+      },
+      {
+        "tag": "v0.3.1",
+        "assetCount": 1
+      },
+      {
+        "tag": "v0.3.0",
+        "assetCount": 1
+      },
+      {
+        "tag": "v0.2.1",
+        "assetCount": 1
+      },
+      {
+        "tag": "v0.2.0",
+        "assetCount": 1
+      },
+      {
+        "tag": "v0.1.0",
+        "assetCount": 1
+      }
+    ]
+  },
+  {
+    "name": "Themerr-jellyfin",
+    "archived": true,
+    "releases": [
+      {
+        "tag": "v2024.523.2124.32",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.519.1836.29",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.519.1512.33",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.518.2054.48",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.518.2043.13",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.518.2031.24",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.518.2019.25",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.518.1833.47",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.518.1505.3",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.515.2109.23",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.515.232.46",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.515.221.18",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.514.151.24",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.514.143.19",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.514.137.50",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.514.129.10",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.513.2336.57",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.511.1724.56",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.511.34.40",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.510.2327.42",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.510.2320.6",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.510.2258.28",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.510.2226.2",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.510.2200.22",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.510.2148.54",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.510.2120.23",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.510.2003.50",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.510.1948.49",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.510.1932.47",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.504.1503.23",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.419.48.57",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.325.1706.30",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.324.2113.53",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.324.1956.40",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.324.1949.50",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.324.1933.37",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.324.1924.50",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.324.1904.42",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.324.1744.11",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.324.1720.15",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.324.1710.53",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.324.233.40",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.323.2314.44",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.210.232.20",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.201.1515.56",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.201.1507.40",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.201.1449.56",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.113.1544.53",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.113.351.4",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.113.341.39",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.113.327.29",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.112.1746.25",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.112.249.37",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1226.2254.10",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1226.2220.18",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1226.2207.46",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1226.2114.6",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1222.58.35",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1221.2316.50",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1221.2211.0",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1221.347.52",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1220.2206.28",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1220.18.5",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1219.1658.23",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1219.355.10",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1217.1356.39",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1216.556.16",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1215.2259.6",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1215.317.17",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1215.251.32",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1215.241.3",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1215.221.13",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1214.436.9",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1212.418.27",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1211.1611.20",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1211.245.52",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1211.237.12",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1211.225.23",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1211.214.5",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1211.149.9",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1211.105.6",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1211.31.24",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1210.1448.35",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1210.504.40",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1210.439.17",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1207.247.13",
+        "assetCount": 1
+      },
+      {
+        "tag": "v0.0.2",
+        "assetCount": 1
+      },
+      {
+        "tag": "v0.0.1",
+        "assetCount": 1
+      }
+    ]
+  },
+  {
+    "name": "Themerr-kodi",
+    "archived": true,
+    "releases": [
+      {
+        "tag": "v2024.419.180955",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.419.175909",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.419.174500",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.419.152742",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.419.132022",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.418.160350",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.311.173404",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.311.22638",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.228.22556",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.210.22949",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.202.203513",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.202.180448",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.202.170130",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.202.162722",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.119.25951",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.114.154402",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.114.153444",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.114.10251",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.114.716",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.113.234546",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.113.230913",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.106.223523",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.106.222441",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.106.221058",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1230.170700",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1230.164741",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1230.162521",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1230.142040",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1230.140227",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1229.203620",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1229.23012",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1229.15736",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1229.14458",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1229.11357",
+        "assetCount": 1
+      }
+    ]
+  },
+  {
+    "name": "libdisplaydevice",
+    "archived": false,
+    "releases": [
+      {
+        "tag": "v2025.411.113543",
+        "assetCount": 2
+      },
+      {
+        "tag": "v2025.115.133852",
+        "assetCount": 2
+      },
+      {
+        "tag": "v2024.1217.151047",
+        "assetCount": 2
+      },
+      {
+        "tag": "v2024.1116.222346",
+        "assetCount": 2
+      },
+      {
+        "tag": "v2024.807.213004",
+        "assetCount": 2
+      }
+    ]
+  },
+  {
+    "name": "pacman-repo-builder",
+    "archived": false,
+    "releases": [
+      {
+        "tag": "v2025.612.130053",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.1102.214158",
+        "assetCount": 1
+      }
+    ]
+  }
+]
