@@ -53,8 +53,8 @@ jobs:
         with:
           github-token: ${{ secrets.GH_BOT_TOKEN }}
           script: |
-            // Import the sync assets module
-            const { syncReleaseAssets } = require('./.github/scripts/sync-assets.js');
+            // Import the sync assets with metadata module
+            const { syncAssetsWithMetadata } = require('./.github/scripts/sync-assets-with-metadata.js');
 
             // Check if this is a pull request event
             const isPullRequest = context.eventName === 'pull_request';
@@ -62,14 +62,11 @@ jobs:
             // Get the max new assets limit from environment
             const maxNewAssets = parseInt(process.env.MAX_NEW_ASSETS) || 0;
 
-            // Run the asset synchronization with PR limit and asset limit
             // Change working directory to dist for file operations
             process.chdir('./dist');
-            const repositoryData = await syncReleaseAssets(github, context, isPullRequest, maxNewAssets);
 
-            // Store repository data for use in next step
-            const fs = require('fs');
-            fs.writeFileSync('repo-metadata.json', JSON.stringify(repositoryData, null, 2));
+            // Run the asset synchronization and store metadata
+            await syncAssetsWithMetadata(github, context, isPullRequest, maxNewAssets);
 
       - name: Generate packages.json
         uses: actions/github-script@v8
@@ -77,28 +74,15 @@ jobs:
           github-token: ${{ secrets.GH_BOT_TOKEN }}
           script: |
             // Import the packages generation module
-            const { generatePackagesJson, writePackagesJson } = require('./.github/scripts/generate-packages.js');
+            const { generatePackagesWithCleanup } = require('./.github/scripts/generate-packages-with-cleanup.js');
 
             console.log('Generating packages.json from dist directory...');
 
             // Change to dist directory
             process.chdir('./dist');
 
-            // Read repository metadata from previous step
-            const fs = require('fs');
-            let repositoryMetadata = [];
-            try {
-              const metadataContent = fs.readFileSync('repo-metadata.json', 'utf8');
-              repositoryMetadata = JSON.parse(metadataContent);
-            } catch (error) {
-              console.log('No repository metadata found, continuing without archived status');
-            }
-
-            // Generate the packages data
-            const packagesData = generatePackagesJson('.', repositoryMetadata);
-
-            // Write the packages.json file
-            writePackagesJson(packagesData, './packages.json');
+            // Generate packages.json with cleanup
+            generatePackagesWithCleanup('.');
 
       - name: Commit and push changes
         if: github.event_name != 'pull_request'

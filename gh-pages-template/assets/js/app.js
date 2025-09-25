@@ -144,7 +144,7 @@ class UIManager {
                                 `).join('') : '<li class="list-group-item">No releases found</li>'}
                                 ${hasMoreReleases ? `
                                     <li class="list-group-item px-0 text-center">
-                                        <a href="https://github.com/${this.orgName}/packages/tree/dist/${repo.name}" 
+                                        <a href="https://github.com/${this.orgName}/packages/tree/dist/${repo.name}"
                                            class="btn btn-outline-primary btn-sm" target="_blank" rel="noopener">
                                             Show ${remainingCount} more release${releaseText}
                                         </a>
