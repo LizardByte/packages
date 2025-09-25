@@ -270,7 +270,7 @@ class LizardByteAssetsApp {
         } catch (error) {
             console.error('Failed to initialize application:', error);
             this.uiManager.repositoryGrid.innerHTML =
-                '<div class="no-results">Failed to load repository data. Please try again later.</div>';
+                '<div class="col-12 text-center fst-italic py-5">Failed to load repository data. Please try again later.</div>';
         }
     }
 }
