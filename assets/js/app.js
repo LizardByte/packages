@@ -69,7 +69,7 @@ class RepositoryDataManager {
     /**
      * Filter repositories based on search term and archived status
      */
-    filterRepositories(searchTerm, showArchived = true) {
+    filterRepositories(searchTerm, showArchived = false) {
         let filteredRepos = this.repositoryData;
 
         // Filter by archived status first
@@ -230,7 +230,7 @@ class FilterManager {
      */
     resetFilters() {
         this.searchInput.value = '';
-        this.archivedToggle.checked = true;
+        this.archivedToggle.checked = false;
         this.applyFilters();
     }
 }
@@ -256,15 +256,14 @@ class LizardByteAssetsApp {
 
             // Load repository data from packages.json
             await this.dataManager.loadRepositoryData();
-            const repositories = this.dataManager.getRepositories();
 
-            // Render repositories and update stats
-            this.uiManager.renderRepositories(repositories);
-            this.uiManager.updateStats(repositories);
-
-            // Initialize filter functionality
+            // Initialize filter functionality first
             this.filterManager = new FilterManager(this.dataManager, this.uiManager);
 
+            // Apply initial filters (this will render repositories and update stats)
+            this.filterManager.applyFilters();
+
+            const repositories = this.dataManager.getRepositories();
             console.log(`Loaded ${repositories.length} repositories`);
 
         } catch (error) {
