@@ -4,12 +4,19 @@ const path = require('path');
 /**
  * Generate packages.json file by scanning the dist directory structure
  * @param {string} distPath - Path to the dist directory
+ * @param {Array} repositoryMetadata - Repository metadata from sync process with archived status
  * @returns {Object} Generated packages data
  */
-function generatePackagesJson(distPath = '.') {
+function generatePackagesJson(distPath = '.', repositoryMetadata = []) {
     console.log(`Scanning dist directory: ${distPath}`);
 
     const repositories = [];
+
+    // Create a map of repository metadata for quick lookup
+    const repoMetadataMap = new Map();
+    repositoryMetadata.forEach(repo => {
+        repoMetadataMap.set(repo.name, repo);
+    });
 
     try {
         // Read the dist directory
@@ -21,6 +28,12 @@ function generatePackagesJson(distPath = '.') {
                 console.log(`Processing repository: ${dirent.name}`);
                 const repoData = scanRepositoryDirectory(path.join(distPath, dirent.name));
                 if (repoData) {
+                    // Update archived status from metadata if available
+                    const metadata = repoMetadataMap.get(dirent.name);
+                    if (metadata) {
+                        repoData.archived = metadata.archived;
+                    }
+
                     repositories.push(repoData);
                     console.log(`  Found ${repoData.releases.length} releases`);
                 } else {
@@ -79,7 +92,7 @@ function scanRepositoryDirectory(repoPath) {
         const repoDirContents = fs.readdirSync(repoPath, { withFileTypes: true });
 
         for (const dirent of repoDirContents) {
-            if (dirent.isDirectory()) {
+            if (dirent.isDirectory() && dirent.name.startsWith('v')) { // Only process v-prefixed releases
                 const releaseData = scanReleaseDirectory(path.join(repoPath, dirent.name));
                 if (releaseData) {
                     releases.push(releaseData);
@@ -93,7 +106,7 @@ function scanRepositoryDirectory(repoPath) {
         if (releases.length > 0) {
             return {
                 name: repoName,
-                archived: false, // Default to false, will be updated by sync process
+                archived: false, // This will be updated by the sync process with actual GitHub data
                 releases: releases
             };
         }
