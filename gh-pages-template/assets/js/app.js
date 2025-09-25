@@ -104,6 +104,7 @@ class UIManager {
         this.assetCountElement = document.getElementById('assetCount');
         this.updateTimeElement = document.getElementById('updateTime');
         this.orgName = 'LizardByte';
+        this.lastUpdated = null; // Store lastUpdated from packages.json
     }
 
     /**
@@ -170,7 +171,28 @@ class UIManager {
         this.repoCountElement.textContent = repoCount;
         this.releaseCountElement.textContent = releaseCount;
         this.assetCountElement.textContent = assetCount;
-        this.updateTimeElement.textContent = new Date().toLocaleString();
+
+        if (this.lastUpdated) { // Only set update time if lastUpdated is set
+            this.updateTimeElement.textContent = this.formatUpdateTime(this.lastUpdated);
+        }
+    }
+
+    /**
+     * Set the last updated time from packages.json
+     */
+    setUpdateTime(lastUpdated) {
+        this.lastUpdated = lastUpdated;
+        this.updateTimeElement.textContent = this.formatUpdateTime(lastUpdated);
+    }
+
+    /**
+     * Format the update time for display
+     */
+    formatUpdateTime(isoString) {
+        if (!isoString) return '-';
+        const date = new Date(isoString);
+        if (isNaN(date.getTime())) return isoString;
+        return date.toLocaleString();
     }
 
     /**
@@ -182,6 +204,7 @@ class UIManager {
         this.releaseCountElement.textContent = '-';
         this.assetCountElement.textContent = '-';
         this.updateTimeElement.textContent = '-';
+        this.lastUpdated = null;
     }
 }
 
@@ -244,6 +267,7 @@ class LizardByteAssetsApp {
         this.dataManager = new RepositoryDataManager();
         this.uiManager = new UIManager();
         this.filterManager = null;
+        this.lastUpdated = null;
     }
 
     /**
@@ -255,7 +279,9 @@ class LizardByteAssetsApp {
             this.uiManager.showLoading();
 
             // Load repository data from packages.json
-            await this.dataManager.loadRepositoryData();
+            const data = await this.dataManager.loadRepositoryData();
+            this.lastUpdated = data.lastUpdated;
+            this.uiManager.setUpdateTime(this.lastUpdated);
 
             // Initialize filter functionality first
             this.filterManager = new FilterManager(this.dataManager, this.uiManager);
