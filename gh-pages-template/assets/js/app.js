@@ -84,7 +84,7 @@ class RepositoryDataManager {
 
         return filteredRepos.filter(repo => {
             const repoMatch = repo.name.toLowerCase().includes(searchTerm.toLowerCase());
-            const releaseMatch = repo.releases && repo.releases.some(release =>
+            const releaseMatch = repo.releases?.some(release =>
                 release.tag.toLowerCase().includes(searchTerm.toLowerCase()));
             return repoMatch || releaseMatch;
         });
@@ -121,6 +121,9 @@ class UIManager {
             const hasMoreReleases = repo.releases && repo.releases.length > 5;
             const remainingCount = hasMoreReleases ? repo.releases.length - 5 : 0;
 
+            // Extract ternary operation for better readability
+            const releaseText = remainingCount > 1 ? 's' : '';
+
             return `
                 <div class="col-lg-4 col-md-6 mb-4" data-repo="${repo.name.toLowerCase()}" ${repo.archived ? 'data-archived="true"' : ''}>
                     <div class="card h-100 shadow border-0 rounded-0">
@@ -143,7 +146,7 @@ class UIManager {
                                     <li class="list-group-item px-0 text-center">
                                         <a href="https://github.com/${this.orgName}/packages/tree/dist/${repo.name}" 
                                            class="btn btn-outline-primary btn-sm" target="_blank" rel="noopener">
-                                            Show ${remainingCount} more release${remainingCount > 1 ? 's' : ''}
+                                            Show ${remainingCount} more release${releaseText}
                                         </a>
                                     </li>
                                 ` : ''}
@@ -251,8 +254,8 @@ class LizardByteAssetsApp {
             // Show loading state
             this.uiManager.showLoading();
 
-            // Load repository data
-            const data = await this.dataManager.loadRepositoryData();
+            // Load repository data from packages.json
+            await this.dataManager.loadRepositoryData();
             const repositories = this.dataManager.getRepositories();
 
             // Render repositories and update stats
