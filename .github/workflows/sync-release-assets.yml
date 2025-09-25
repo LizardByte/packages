@@ -65,7 +65,11 @@ jobs:
             // Run the asset synchronization with PR limit and asset limit
             // Change working directory to dist for file operations
             process.chdir('./dist');
-            await syncReleaseAssets(github, context, isPullRequest, maxNewAssets);
+            const repositoryData = await syncReleaseAssets(github, context, isPullRequest, maxNewAssets);
+
+            // Store repository data for use in next step
+            const fs = require('fs');
+            fs.writeFileSync('repo-metadata.json', JSON.stringify(repositoryData, null, 2));
 
       - name: Generate packages.json
         uses: actions/github-script@v8
@@ -80,8 +84,18 @@ jobs:
             // Change to dist directory
             process.chdir('./dist');
 
+            // Read repository metadata from previous step
+            const fs = require('fs');
+            let repositoryMetadata = [];
+            try {
+              const metadataContent = fs.readFileSync('repo-metadata.json', 'utf8');
+              repositoryMetadata = JSON.parse(metadataContent);
+            } catch (error) {
+              console.log('No repository metadata found, continuing without archived status');
+            }
+
             // Generate the packages data
-            const packagesData = generatePackagesJson('.');
+            const packagesData = generatePackagesJson('.', repositoryMetadata);
 
             // Write the packages.json file
             writePackagesJson(packagesData, './packages.json');

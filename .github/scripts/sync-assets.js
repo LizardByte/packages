@@ -24,8 +24,12 @@ async function processRepository(github, context, repo, repositoryData, totalAss
       per_page: 100
     });
 
-    // Filter out draft and prerelease
-    const publishedReleases = releases.filter(release => !release.draft && !release.prerelease);
+    // Filter out draft and prerelease, and only include releases with v-prefixed tags
+    const publishedReleases = releases.filter(release =>
+      !release.draft &&
+      !release.prerelease &&
+      release.tag_name.startsWith('v')
+    );
 
     if (publishedReleases.length === 0) {
       console.log(`No published releases found for ${repo.name}`);
@@ -273,6 +277,9 @@ async function syncReleaseAssets(github, context, isPullRequest = false, maxNewA
   } else {
     console.log(`Downloaded ${newAssetsDownloaded} new assets`);
   }
+
+  // Return repository data with archived status
+  return repositoryData;
 }
 
 module.exports = {

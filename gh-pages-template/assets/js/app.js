@@ -115,26 +115,44 @@ class UIManager {
             return;
         }
 
-        this.repositoryGrid.innerHTML = repos.map(repo => `
-            <div class="col-lg-4 col-md-6 mb-4" data-repo="${repo.name.toLowerCase()}">
-                <div class="card h-100 shadow border-0 rounded-0">
-                    <div class="card-body text-white p-4 rounded-0">
-                        <h5 class="card-title text-info mb-3">${repo.name}</h5>
-                        <ul class="list-group list-group-flush">
-                            ${repo.releases ? repo.releases.map(release => `
-                                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
-                                    <a href="https://github.com/${this.orgName}/packages/tree/dist/${repo.name}/${release.tag}"
-                                       class="text-decoration-none fw-medium" target="_blank" rel="noopener">
-                                        ${release.tag}
-                                    </a>
-                                    <span class="badge bg-secondary rounded-pill">${release.assetCount}</span>
-                                </li>
-                            `).join('') : '<li class="list-group-item">No releases found</li>'}
-                        </ul>
+        this.repositoryGrid.innerHTML = repos.map(repo => {
+            // Show only the latest 5 releases
+            const displayReleases = repo.releases ? repo.releases.slice(0, 5) : [];
+            const hasMoreReleases = repo.releases && repo.releases.length > 5;
+            const remainingCount = hasMoreReleases ? repo.releases.length - 5 : 0;
+
+            return `
+                <div class="col-lg-4 col-md-6 mb-4" data-repo="${repo.name.toLowerCase()}" ${repo.archived ? 'data-archived="true"' : ''}>
+                    <div class="card h-100 shadow border-0 rounded-0">
+                        <div class="card-body text-white p-4 rounded-0">
+                            <h5 class="card-title text-info mb-3">
+                                ${repo.name}
+                                ${repo.archived ? '<span class="badge bg-warning text-dark ms-2">Archived</span>' : ''}
+                            </h5>
+                            <ul class="list-group list-group-flush">
+                                ${displayReleases.length > 0 ? displayReleases.map(release => `
+                                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                        <a href="https://github.com/${this.orgName}/packages/tree/dist/${repo.name}/${release.tag}"
+                                           class="text-decoration-none fw-medium" target="_blank" rel="noopener">
+                                            ${release.tag}
+                                        </a>
+                                        <span class="badge bg-secondary rounded-pill">${release.assetCount}</span>
+                                    </li>
+                                `).join('') : '<li class="list-group-item">No releases found</li>'}
+                                ${hasMoreReleases ? `
+                                    <li class="list-group-item px-0 text-center">
+                                        <a href="https://github.com/${this.orgName}/packages/tree/dist/${repo.name}" 
+                                           class="btn btn-outline-primary btn-sm" target="_blank" rel="noopener">
+                                            Show ${remainingCount} more release${remainingCount > 1 ? 's' : ''}
+                                        </a>
+                                    </li>
+                                ` : ''}
+                            </ul>
+                        </div>
                     </div>
                 </div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
     }
 
     /**
