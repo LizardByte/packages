@@ -35,7 +35,18 @@ $(document).ready(function(){
             let sorted = result.sort(window.rankingSorter("stargazers_count", "name"))
 
             for(let repo in sorted) {
-                if (sorted[repo]['archived'] === false && sorted[repo]['description'] !== null && sorted[repo]['fork'] === false) {
+                let process_repo = true;
+                if (sorted[repo]['archived'] === true) {
+                    process_repo = false;
+                }
+                if (sorted[repo]['description'] === null) {
+                    process_repo = false;
+                }
+                if (sorted[repo]['fork'] === true && !sorted[repo]['topics'].includes("featured-fork")) {
+                    process_repo = false;
+                }
+
+                if (process_repo) {
                     let column = document.createElement("div")
                     column.className = "col-lg-4 mb-5"
                     container.appendChild(column)
@@ -73,6 +84,15 @@ $(document).ready(function(){
                     let card_title_text = document.createElement("h5")
                     card_title_text.className = "card-title mb-3 fw-bolder crowdin-ignore"
                     card_title_text.textContent = result[repo]['name']
+
+                    // Add fork badge for featured forks
+                    if (sorted[repo]['fork'] === true && sorted[repo]['topics'].includes("featured-fork")) {
+                        let fork_badge = document.createElement("span")
+                        fork_badge.className = "badge bg-info ms-2"
+                        fork_badge.textContent = "Fork"
+                        card_title_text.appendChild(fork_badge)
+                    }
+
                     card_title_link.appendChild(card_title_text)
 
                     let card_paragraph = document.createElement("p")
@@ -83,6 +103,55 @@ $(document).ready(function(){
                     let card_footer = document.createElement("div")
                     card_footer.className = "card-footer p-2 pt-0 border-0 rounded-0"
                     card.appendChild(card_footer)
+
+                    // Add commit activity graph
+                    $.ajax({
+                        url: `${base_url}/${cache_repo}/github/commitActivity/${sorted[repo]['name']}.json`,
+                        type: "GET",
+                        dataType: "json",
+                        success: function (commitActivity) {
+                            // Create a container for the activity graph
+                            let activity_container = document.createElement("div")
+                            activity_container.className = "commit-activity-graph mt-2 mb-2 mx-3"
+                            activity_container.style.cssText = "display: flex; gap: 2px; height: 32px; align-items: flex-end;"
+
+                            // Find max value for scaling
+                            let maxCommits = Math.max(...commitActivity.map(week => week.total))
+
+                            // Create bars for each week
+                            for (let week of commitActivity) {
+                                let bar = document.createElement("div")
+                                let height = maxCommits > 0 ? (week.total / maxCommits) * 100 : 0
+
+                                bar.style.cssText = `
+                                    flex: 1;
+                                    min-width: 2px;
+                                    background-color: ${week.total === 0 ? 'rgba(255,255,255,0.1)' : 'rgba(64, 196, 99, ' + (0.3 + (height / 100) * 0.7) + ')'};
+                                    height: ${Math.max(height, 10)}%;
+                                    border-radius: 1px;
+                                    transition: all 0.2s ease;
+                                `
+                                bar.title = `${week.total} commits this week`
+
+                                // Add hover effect
+                                bar.addEventListener('mouseenter', function() {
+                                    this.style.backgroundColor = week.total === 0 ? 'rgba(255,255,255,0.2)' : 'rgba(64, 196, 99, 1)'
+                                })
+                                bar.addEventListener('mouseleave', function() {
+                                    this.style.backgroundColor = week.total === 0 ? 'rgba(255,255,255,0.1)' : 'rgba(64, 196, 99, ' + (0.3 + (height / 100) * 0.7) + ')'
+                                })
+
+                                activity_container.appendChild(bar)
+                            }
+
+                            // Insert as first child of card_footer
+                            card_footer.insertBefore(activity_container, card_footer.firstChild)
+                        },
+                        error: function() {
+                            // Silently fail if commit activity data is not available
+                            console.log(`No commit activity data available for ${sorted[repo]['name']}`)
+                        }
+                    })
 
                     let repo_data_row = document.createElement("div")
                     repo_data_row.className = "d-flex align-items-center"
@@ -150,13 +219,18 @@ $(document).ready(function(){
                             }
 
                             let docs_link = document.createElement("a")
-                            docs_link.className = "nav-link text-warning ms-3"
+                            docs_link.className = "nav-link ms-3"
                             docs_link.href = docs_url
                             docs_link.target = "_blank"
                             repo_data_row.appendChild(docs_link)
 
-                            let docs_link_image = document.createElement("i")
-                            docs_link_image.className = "fa-fw fa-solid fa-file-lines"
+                            let docs_link_image = document.createElement("img")
+                            docs_link_image.src = "https://cdn.jsdelivr.net/npm/simple-icons@v15/icons/readthedocs.svg"
+                            docs_link_image.alt = "ReadTheDocs"
+                            docs_link_image.title = "ReadTheDocs"
+                            docs_link_image.style.width = "24px"
+                            docs_link_image.style.height = "24px"
+                            docs_link_image.style.filter = "brightness(0) saturate(100%) invert(72%) sepia(89%) saturate(455%) hue-rotate(358deg) brightness(103%) contrast(104%)"
                             docs_link.prepend(docs_link_image)
                         }
                     }
