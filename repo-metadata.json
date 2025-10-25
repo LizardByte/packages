@@ -688,6 +688,124 @@
     ]
   },
   {
+    "name": "GSMS",
+    "archived": true,
+    "releases": [
+      {
+        "tag": "v2024.1117.145",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.516.191906",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.512.24444",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.512.23938",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.512.23329",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.512.22830",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.512.22125",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.512.21554",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.409.21558",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.409.15624",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.409.13335",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.311.175546",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.311.172846",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.202.205656",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.106.223644",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1219.224553",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1215.225411",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1211.152658",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1211.141536",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1210.50510",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1210.45321",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1207.150703",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1204.235550",
+        "assetCount": 1
+      },
+      {
+        "tag": "v0.3.1",
+        "assetCount": 1
+      },
+      {
+        "tag": "v0.3.0",
+        "assetCount": 1
+      },
+      {
+        "tag": "v0.2.1",
+        "assetCount": 1
+      },
+      {
+        "tag": "v0.2.0",
+        "assetCount": 1
+      },
+      {
+        "tag": "v0.1.0",
+        "assetCount": 1
+      }
+    ]
+  },
+  {
     "name": "Themerr-jellyfin",
     "archived": true,
     "releases": [

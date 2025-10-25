@@ -1,9 +1,9 @@
 {
-  "lastUpdated": "2025-10-25T05:12:58.140Z",
+  "lastUpdated": "2025-10-25T06:17:07.989Z",
   "repositories": [
     {
       "name": "GSMS",
-      "archived": false,
+      "archived": true,
       "releases": [
         {
           "tag": "v2024.1117.145",
