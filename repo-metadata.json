@@ -383,7 +383,7 @@
   },
   {
     "name": "Themerr-plex",
-    "archived": true,
+    "archived": false,
     "releases": [
       {
         "tag": "v2024.813.13709",
@@ -807,7 +807,7 @@
   },
   {
     "name": "Themerr-jellyfin",
-    "archived": true,
+    "archived": false,
     "releases": [
       {
         "tag": "v2024.523.2124.32",

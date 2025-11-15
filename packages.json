@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-11-15T04:15:26.668Z",
+  "lastUpdated": "2025-11-15T05:13:03.767Z",
   "repositories": [
     {
       "name": "GSMS",
@@ -543,7 +543,7 @@
     },
     {
       "name": "Themerr-jellyfin",
-      "archived": true,
+      "archived": false,
       "releases": [
         {
           "tag": "v2024.523.2124.32",
@@ -1043,7 +1043,7 @@
     },
     {
       "name": "Themerr-plex",
-      "archived": true,
+      "archived": false,
       "releases": [
         {
           "tag": "v2024.813.13709",
