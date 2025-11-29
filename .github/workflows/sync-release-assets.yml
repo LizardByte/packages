@@ -86,7 +86,7 @@ jobs:
 
       - name: Commit and push changes
         if: github.event_name != 'pull_request'
-        uses: actions-js/push@v1.5
+        uses: actions-js/push@5a7cbd780d82c0c937b5977586e641b2fd94acc5  # v1.5
         with:
           author_email: ${{ secrets.GH_BOT_EMAIL }}
           author_name: ${{ secrets.GH_BOT_NAME }}
