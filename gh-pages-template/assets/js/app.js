@@ -11,6 +11,37 @@ class RepositoryDataManager {
     }
 
     /**
+     * Fetch the last successful workflow run time from GitHub API
+     */
+    async fetchLastWorkflowRun() {
+        try {
+            console.log('Fetching last successful workflow run...');
+
+            // Fetch workflow runs for the sync-release-assets.yml workflow
+            const response = await fetch(`https://api.github.com/repos/${this.orgName}/packages/actions/workflows/sync-release-assets.yml/runs?event=schedule&status=success&branch=master&per_page=1`);
+
+            if (!response.ok) {
+                console.warn(`Failed to fetch workflow runs: ${response.status}`);
+                return null;
+            }
+
+            const data = await response.json();
+
+            if (data.workflow_runs && data.workflow_runs.length > 0) {
+                const lastRun = data.workflow_runs[0];
+                console.log(`Last successful workflow run: ${lastRun.updated_at}`);
+                return lastRun.updated_at;
+            }
+
+            return null;
+
+        } catch (error) {
+            console.error('Error fetching workflow run:', error);
+            return null;
+        }
+    }
+
+    /**
      * Load repository data from packages.json in the dist branch
      */
     async loadRepositoryData() {
@@ -35,9 +66,12 @@ class RepositoryDataManager {
 
             console.log(`Loaded data for ${this.repositoryData.length} repositories from packages.json`);
 
+            // Fetch the last successful workflow run time
+            const lastUpdated = await this.fetchLastWorkflowRun();
+
             return {
                 repositories: this.repositoryData,
-                lastUpdated: data.lastUpdated || new Date().toISOString(),
+                lastUpdated: lastUpdated || new Date().toISOString(),
                 totalRepositories: this.repositoryData.length,
                 totalReleases: this.repositoryData.reduce((sum, repo) => sum + (repo.releases ? repo.releases.length : 0), 0),
                 totalAssets: this.repositoryData.reduce((sum, repo) =>
@@ -51,7 +85,7 @@ class RepositoryDataManager {
             return {
                 repositories: [],
                 error: error.message,
-                lastUpdated: new Date().toISOString(),
+                lastUpdated: null,
                 totalRepositories: 0,
                 totalReleases: 0,
                 totalAssets: 0
