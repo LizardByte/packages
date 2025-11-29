@@ -52,7 +52,6 @@ function generatePackagesJson(distPath = '.', repositoryMetadata = []) {
         );
 
         const packagesData = {
-            lastUpdated: new Date().toISOString(),
             repositories: repositories,
             stats: {
                 totalRepositories: repositories.length,
