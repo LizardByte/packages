@@ -149,6 +149,10 @@
       "archived": false,
       "releases": [
         {
+          "tag": "v2025.1223.231507",
+          "assetCount": 1
+        },
+        {
           "tag": "v2025.612.130053",
           "assetCount": 1
         },
@@ -1349,7 +1353,7 @@
   ],
   "stats": {
     "totalRepositories": 9,
-    "totalReleases": 323,
-    "totalAssets": 787
+    "totalReleases": 324,
+    "totalAssets": 788
   }
 }
