@@ -1330,5 +1330,23 @@
         "assetCount": 2
       }
     ]
+  },
+  {
+    "name": "pacman-repo-builder",
+    "archived": false,
+    "releases": [
+      {
+        "tag": "v2025.1223.231507",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2025.612.130053",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.1102.214158",
+        "assetCount": 1
+      }
+    ]
   }
 ]
