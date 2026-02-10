@@ -688,6 +688,16 @@
     ]
   },
   {
+    "name": "build-deps",
+    "archived": false,
+    "releases": [
+      {
+        "tag": "v2026.209.233149",
+        "assetCount": 18
+      }
+    ]
+  },
+  {
     "name": "GSMS",
     "archived": true,
     "releases": [
