@@ -1,16 +1,9 @@
 ---
 name: Build GH-Pages
-permissions:
-  contents: read
+permissions: {}
 
 on:
   pull_request:
-    branches:
-      - master
-    types:
-      - opened
-      - synchronize
-      - reopened
   push:
     branches:
       - master
@@ -22,6 +15,8 @@ concurrency:
 
 jobs:
   prep:
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -38,10 +33,12 @@ jobs:
 
   call-jekyll-build:
     needs: prep
+    permissions:
+      contents: read
     uses: LizardByte/LizardByte.github.io/.github/workflows/jekyll-build.yml@master
     secrets:
       GH_BOT_EMAIL: ${{ secrets.GH_BOT_EMAIL }}
-      GH_BOT_NAME: ${{ secrets.GH_BOT_NAME }}
+      GH_BOT_NAME: ${{ vars.GH_BOT_NAME }}
       GH_BOT_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
     with:
       clean_gh_pages: true
