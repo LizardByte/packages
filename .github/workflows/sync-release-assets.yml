@@ -1,7 +1,6 @@
 ---
 name: Sync Release Assets
-permissions:
-  contents: read
+permissions: {}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -12,12 +11,6 @@ env:
 on:
   workflow_dispatch:
   pull_request:
-    branches:
-      - master
-    types:
-      - opened
-      - reopened
-      - synchronize
   push:
     branches:
       - master
@@ -26,6 +19,8 @@ on:
 
 jobs:
   sync-assets:
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -89,7 +84,7 @@ jobs:
         uses: actions-js/push@5a7cbd780d82c0c937b5977586e641b2fd94acc5  # v1.5
         with:
           author_email: ${{ secrets.GH_BOT_EMAIL }}
-          author_name: ${{ secrets.GH_BOT_NAME }}
+          author_name: ${{ vars.GH_BOT_NAME }}
           branch: dist
           directory: dist
           github_token: ${{ secrets.GH_BOT_TOKEN }}
