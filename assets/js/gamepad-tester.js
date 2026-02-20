@@ -17,16 +17,36 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
+    // Watch for theme changes to update button images
+    const themeObserver = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'data-bs-theme') {
+                // Theme changed, reinitialize buttons with new color scheme
+                if (activeGamepadIndex !== null) {
+                    initGamepadButtons();
+                }
+            }
+        });
+    });
+
+    // Start observing theme changes on the document element
+    themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['data-bs-theme']
+    });
+
     // Setup gamepad event listeners
     window.addEventListener("gamepadconnected", function(e) {
         gamepads[e.gamepad.index] = e.gamepad;
-        updateGamepadSelector();
+
+        // Always activate the newly connected gamepad
+        activeGamepadIndex = e.gamepad.index;
+
+        updateGamepadSelector(); // This will highlight the active card
         updateStatus(`Gamepad ${e.gamepad.id} connected`);
 
-        // If this is the first gamepad, activate it
-        if (activeGamepadIndex === null) {
-            activeGamepadIndex = e.gamepad.index;
-            gamepadSelector.value = activeGamepadIndex;
+        // Start the loop if it's not already running
+        if (!animationFrameId) {
             startGamepadLoop();
         }
     });
@@ -45,18 +65,21 @@ document.addEventListener('DOMContentLoaded', function() {
             const remainingIndices = Object.keys(gamepads);
             if (remainingIndices.length > 0) {
                 activeGamepadIndex = Number.parseInt(remainingIndices[0]);
-                gamepadSelector.value = activeGamepadIndex;
             } else {
                 stopGamepadLoop();
             }
         }
     });
 
-    // Event listener for gamepad selector change
-    gamepadSelector.addEventListener('change', function() {
-        activeGamepadIndex = Number.parseInt(this.value);
-        initGamepadButtons();
-        initGamepadAxes();
+    // Event delegation for gamepad selector cards
+    gamepadSelector.addEventListener('click', function(e) {
+        const card = e.target.closest('.gamepad-selector-card');
+        if (card) {
+            activeGamepadIndex = Number.parseInt(card.dataset.index);
+            updateGamepadSelector(); // Re-render to update active state
+            initGamepadButtons();
+            initGamepadAxes();
+        }
     });
 
     // Event listeners for vibration controls
@@ -76,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('strong-value').textContent = this.value;
     });
 
-    // Update gamepad selector dropdown
+    // Update gamepad selector buttons
     function updateGamepadSelector() {
         gamepadSelector.innerHTML = '';
 
@@ -87,20 +110,54 @@ document.addEventListener('DOMContentLoaded', function() {
             gamepadInfoSection.style.display = 'flex';
 
             gamepadIndices.forEach(index => {
-                const option = document.createElement('option');
-                option.value = index;
-                option.textContent = `${gamepads[index].id} (Index: ${index})`;
-                gamepadSelector.appendChild(option);
+                const card = document.createElement('div');
+                card.className = 'card gamepad-selector-card';
+                card.dataset.index = index;
+                card.style.cursor = 'pointer';
+                card.style.minWidth = '200px';
+                card.style.maxWidth = '300px';
+                card.style.borderWidth = '2px'; // Always use 2px border
+
+                const isActive = activeGamepadIndex !== null && Number.parseInt(index) === activeGamepadIndex;
+
+                // Mark active gamepad card
+                if (isActive) {
+                    card.classList.add('border-primary');
+                } else {
+                    card.classList.add('border-secondary');
+                }
+
+                const cardBody = document.createElement('div');
+                cardBody.className = 'card-body p-2';
+
+                const gamepadInfo = gamepads[index];
+                const typeInfo = gamepadHelper.getGamepadInfo(gamepadInfo.id);
+
+                cardBody.innerHTML = `
+                    <div class="d-flex align-items-center">
+                        <div class="me-2">
+                            <i class="fas fa-gamepad fa-2x ${isActive ? 'text-primary' : ''}"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="fw-bold small text-truncate">${typeInfo.name}</div>
+                            <div class="opacity-75" style="font-size: 0.75rem;">Index: ${index}</div>
+                            <div class="opacity-75" style="font-size: 0.7rem;">${gamepadInfo.buttons.length} buttons, ${gamepadInfo.axes.length} axes</div>
+                        </div>
+                        <div class="ms-2" style="min-width: 50px; text-align: right;">
+                            ${isActive ? '<span class="badge bg-primary">Active</span>' : ''}
+                        </div>
+                    </div>
+                `;
+
+                card.appendChild(cardBody);
+                gamepadSelector.appendChild(card);
             });
 
-            // Select the active gamepad
-            if (activeGamepadIndex !== null) {
-                gamepadSelector.value = activeGamepadIndex;
-            }
-
             // Initialize buttons and axes for the selected gamepad
-            initGamepadButtons();
-            initGamepadAxes();
+            if (activeGamepadIndex !== null) {
+                initGamepadButtons();
+                initGamepadAxes();
+            }
         } else {
             gamepadSelectorContainer.style.display = 'none';
             gamepadInfoSection.style.display = 'none';
@@ -119,12 +176,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const controllerType = gamepadHelper.detectControllerType(gamepad.id);
 
+        // Detect current theme - use Black icons for light theme, White icons for dark theme
+        const isDarkTheme = document.documentElement.dataset.bsTheme === 'dark';
+        const colorScheme = isDarkTheme ? 'White' : 'Black';
+
         for (let i = 0; i < gamepad.buttons.length; i++) {
             const buttonName = gamepadHelper.getButtonName(controllerType, i);
             const buttonImagePath = gamepadHelper.getButtonImagePath(
                 controllerType,
                 i,
                 `https://cdn.jsdelivr.net/npm/@lizardbyte/gamepad-helper@${gamepadHelperVersion}/assets/img/gamepads/`,
+                colorScheme
             );
 
             const buttonDiv = document.createElement('div');
@@ -481,18 +543,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initial check for already connected gamepads
     const initialGamepads = navigator.getGamepads();
-    for (let i = 0; i < initialGamepads.length; i++) {
-        if (initialGamepads[i]) {
-            gamepads[initialGamepads[i].index] = initialGamepads[i];
+    for (const element of initialGamepads) {
+        if (element) {
+            gamepads[element.index] = element;
         }
     }
 
-    updateGamepadSelector();
-
-    // If we have gamepads already, start the loop
+    // If we have gamepads already, activate the first one
     if (Object.keys(gamepads).length > 0) {
         activeGamepadIndex = Number.parseInt(Object.keys(gamepads)[0]);
         updateStatus(`Gamepad ${gamepads[activeGamepadIndex].id} connected`);
+        updateGamepadSelector(); // Update after setting activeGamepadIndex
         startGamepadLoop();
     }
 });

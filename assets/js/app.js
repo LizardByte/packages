@@ -162,7 +162,7 @@ class UIManager {
             return `
                 <div class="col-lg-4 col-md-6 mb-4" data-repo="${repo.name.toLowerCase()}" ${repo.archived ? 'data-archived="true"' : ''}>
                     <div class="card h-100 shadow border-0 rounded-0">
-                        <div class="card-body text-white p-4 rounded-0">
+                        <div class="card-body p-4 rounded-0">
                             <h5 class="card-title text-info mb-3">
                                 ${repo.name}
                                 ${repo.archived ? '<span class="badge bg-warning text-dark ms-2">Archived</span>' : ''}
