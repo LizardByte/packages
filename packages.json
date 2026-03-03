@@ -918,7 +918,7 @@
     },
     {
       "name": "Themerr-kodi",
-      "archived": true,
+      "archived": false,
       "releases": [
         {
           "tag": "v2024.419.180955",
