@@ -1178,6 +1178,148 @@
     ]
   },
   {
+    "name": "Themerr-kodi",
+    "archived": true,
+    "releases": [
+      {
+        "tag": "v2024.419.180955",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.419.175909",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.419.174500",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.419.152742",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.419.132022",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.418.160350",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.311.173404",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.311.22638",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.228.22556",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.210.22949",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.202.203513",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.202.180448",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.202.170130",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.202.162722",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.119.25951",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.114.154402",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.114.153444",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.114.10251",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.114.716",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.113.234546",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.113.230913",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.106.223523",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.106.222441",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2024.106.221058",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1230.170700",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1230.164741",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1230.162521",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1230.142040",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1230.140227",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1229.203620",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1229.23012",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1229.15736",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1229.14458",
+        "assetCount": 1
+      },
+      {
+        "tag": "v2023.1229.11357",
+        "assetCount": 1
+      }
+    ]
+  },
+  {
     "name": "libdisplaydevice",
     "archived": false,
     "releases": [
