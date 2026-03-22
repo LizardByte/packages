@@ -1324,6 +1324,10 @@
     "archived": false,
     "releases": [
       {
+        "tag": "v2026.322.2407",
+        "assetCount": 2
+      },
+      {
         "tag": "v2025.411.113543",
         "assetCount": 2
       },
