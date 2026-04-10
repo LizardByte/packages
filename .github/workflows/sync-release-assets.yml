@@ -44,7 +44,7 @@ jobs:
           fi
 
       - name: Get organization repositories and download assets
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GH_BOT_TOKEN }}
           script: |
@@ -64,7 +64,7 @@ jobs:
             await syncAssetsWithMetadata(github, context, isPullRequest, maxNewAssets);
 
       - name: Generate packages.json
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GH_BOT_TOKEN }}
           script: |
