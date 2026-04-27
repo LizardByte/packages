@@ -24,7 +24,7 @@
     },
     {
       "name": "GSMS",
-      "archived": false,
+      "archived": true,
       "releases": [
         {
           "tag": "v2024.1117.145",
@@ -190,7 +190,7 @@
     },
     {
       "name": "plexhints",
-      "archived": false,
+      "archived": true,
       "releases": [
         {
           "tag": "v2024.809.14117",
@@ -356,7 +356,7 @@
     },
     {
       "name": "PlexyGlass",
-      "archived": false,
+      "archived": true,
       "releases": [
         {
           "tag": "v2024.419.4845",
@@ -930,7 +930,7 @@
     },
     {
       "name": "Themerr-kodi",
-      "archived": false,
+      "archived": true,
       "releases": [
         {
           "tag": "v2024.419.180955",
