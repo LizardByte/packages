@@ -692,6 +692,10 @@
     "archived": false,
     "releases": [
       {
+        "tag": "v2026.425.130933",
+        "assetCount": 22
+      },
+      {
         "tag": "v2026.323.141148",
         "assetCount": 18
       },
