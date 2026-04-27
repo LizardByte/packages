@@ -1,1 +1,144 @@
-[]
+[
+  {
+    "name": "Sunshine",
+    "archived": false,
+    "releases": [
+      {
+        "tag": "v2025.924.154138",
+        "assetCount": 19
+      },
+      {
+        "tag": "v2025.923.33222",
+        "assetCount": 19
+      },
+      {
+        "tag": "v2025.628.4510",
+        "assetCount": 15
+      },
+      {
+        "tag": "v2025.122.141614",
+        "assetCount": 15
+      },
+      {
+        "tag": "v2025.118.151840",
+        "assetCount": 15
+      },
+      {
+        "tag": "v0.23.1",
+        "assetCount": 16
+      },
+      {
+        "tag": "v0.23.0",
+        "assetCount": 16
+      },
+      {
+        "tag": "v0.22.2",
+        "assetCount": 21
+      },
+      {
+        "tag": "v0.22.1",
+        "assetCount": 21
+      },
+      {
+        "tag": "v0.22.0",
+        "assetCount": 23
+      },
+      {
+        "tag": "v0.21.0",
+        "assetCount": 22
+      },
+      {
+        "tag": "v0.20.0",
+        "assetCount": 21
+      },
+      {
+        "tag": "v0.19.1",
+        "assetCount": 20
+      },
+      {
+        "tag": "v0.19.0",
+        "assetCount": 20
+      },
+      {
+        "tag": "v0.18.4",
+        "assetCount": 20
+      },
+      {
+        "tag": "v0.18.3",
+        "assetCount": 20
+      },
+      {
+        "tag": "v0.18.2",
+        "assetCount": 18
+      },
+      {
+        "tag": "v0.18.1",
+        "assetCount": 18
+      },
+      {
+        "tag": "v0.18.0",
+        "assetCount": 18
+      },
+      {
+        "tag": "v0.17.0",
+        "assetCount": 12
+      },
+      {
+        "tag": "v0.16.0",
+        "assetCount": 12
+      },
+      {
+        "tag": "v0.15.0",
+        "assetCount": 11
+      },
+      {
+        "tag": "v0.14.1",
+        "assetCount": 8
+      },
+      {
+        "tag": "v0.14.0",
+        "assetCount": 5
+      },
+      {
+        "tag": "v0.13.0",
+        "assetCount": 6
+      },
+      {
+        "tag": "v0.12.0",
+        "assetCount": 6
+      },
+      {
+        "tag": "v0.11.1",
+        "assetCount": 4
+      },
+      {
+        "tag": "v0.10.1",
+        "assetCount": 5
+      },
+      {
+        "tag": "v0.10.0",
+        "assetCount": 5
+      },
+      {
+        "tag": "v0.9.0",
+        "assetCount": 4
+      },
+      {
+        "tag": "v0.8.0",
+        "assetCount": 5
+      },
+      {
+        "tag": "v0.7.7",
+        "assetCount": 5
+      },
+      {
+        "tag": "v0.7.1",
+        "assetCount": 4
+      },
+      {
+        "tag": "v0.7.0",
+        "assetCount": 4
+      }
+    ]
+  }
+]
