@@ -27,23 +27,36 @@ jobs:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
 
-      - name: Create or checkout dist branch into dist directory
+      - name: Check dist branch
+        id: dist_branch
         run: |
           if git ls-remote --exit-code --heads origin dist >/dev/null; then
-            echo "Dist branch exists, checking it out at depth 1"
-            git fetch --no-tags --depth=1 origin dist:refs/remotes/origin/dist
-            git worktree add dist origin/dist
+            echo "exists=true" >> "${GITHUB_OUTPUT}"
           else
             status=$?
             if [ "$status" -ne 2 ]; then
               exit "$status"
             fi
 
-            echo "Dist branch doesn't exist, creating new one"
-            git worktree add --orphan dist
-            cd dist
-            git rm -rf . 2>/dev/null || true
+            echo "exists=false" >> "${GITHUB_OUTPUT}"
           fi
+
+      - name: Checkout dist branch
+        if: steps.dist_branch.outputs.exists == 'true'
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          ref: dist
+          path: dist
+          persist-credentials: false  # otherwise, pushes use GITHUB_TOKEN instead of the personal token
+          fetch-depth: 1
+
+      - name: Create dist branch
+        if: steps.dist_branch.outputs.exists == 'false'
+        run: |
+          mkdir dist
+          cd dist
+          git init --initial-branch=dist
+          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
 
       - name: Get organization repositories and download assets
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3  # v9.0.0
