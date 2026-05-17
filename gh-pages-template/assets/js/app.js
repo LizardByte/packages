@@ -6,12 +6,28 @@ const DEFAULT_PAGE_TITLE = document.title || 'Packages';
  * @returns {string} Escaped HTML string.
  */
 function escapeHtml(value) {
-    return String(value ?? '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
+    if (value === null || value === undefined) {
+        return '';
+    }
+
+    let stringValue;
+    switch (typeof value) {
+        case 'bigint':
+        case 'boolean':
+        case 'number':
+        case 'string':
+            stringValue = `${value}`;
+            break;
+        default:
+            return '';
+    }
+
+    return stringValue
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
 }
 
 /**
@@ -39,7 +55,7 @@ function buildReleaseHash(repoName, releaseTag) {
  */
 function parseReleaseHash() {
     const prefix = '#/release/';
-    const hash = window.location.hash || '';
+    const hash = globalThis.location.hash || '';
 
     if (!hash.startsWith(prefix)) {
         return null;
@@ -208,8 +224,10 @@ class RepositoryDataManager {
             const repoMatch = repo.name.toLowerCase().includes(normalizedSearch);
             const releaseMatch = repo.releases?.some(release => {
                 const tagMatch = release.tag.toLowerCase().includes(normalizedSearch);
-                const assetMatch = release.assets?.some(asset =>
-                    String(asset.name || '').toLowerCase().includes(normalizedSearch));
+                const assetMatch = release.assets?.some(asset => {
+                    const assetName = typeof asset.name === 'string' ? asset.name : '';
+                    return assetName.toLowerCase().includes(normalizedSearch);
+                });
                 return tagMatch || assetMatch;
             });
 
@@ -282,6 +300,29 @@ class UIManager {
 
             // Extract ternary operation for better readability
             const releaseText = remainingCount === 1 ? '' : 's';
+            const releaseItemsHtml = displayReleases.length > 0
+                ? displayReleases.map(release => `
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0 gap-3">
+                        <a href="${escapeAttribute(buildReleaseHash(repo.name, release.tag))}"
+                           class="text-decoration-none fw-medium">
+                            ${escapeHtml(release.tag)}
+                        </a>
+                        <span class="badge bg-secondary rounded-pill">${this.getReleaseAssetCount(release)}</span>
+                    </li>
+                `).join('')
+                : '<li class="list-group-item">No releases found</li>';
+            const toggleButtonText = isExpanded ? 'Show fewer releases' : `Show ${remainingCount} more release${releaseText}`;
+            const toggleReleasesHtml = hasMoreReleases
+                ? `
+                    <li class="list-group-item px-0 text-center">
+                        <button type="button"
+                                class="btn btn-outline-primary btn-sm js-toggle-releases"
+                                data-repo="${escapeAttribute(repo.name)}">
+                            ${toggleButtonText}
+                        </button>
+                    </li>
+                `
+                : '';
 
             return `
                 <div class="col-lg-4 col-md-6 mb-4" data-repo="${escapeAttribute(repo.name.toLowerCase())}" ${repo.archived ? 'data-archived="true"' : ''}>
@@ -292,24 +333,8 @@ class UIManager {
                                 ${repo.archived ? '<span class="badge bg-warning text-dark ms-2">Archived</span>' : ''}
                             </h5>
                             <ul class="list-group list-group-flush">
-                                ${displayReleases.length > 0 ? displayReleases.map(release => `
-                                    <li class="list-group-item d-flex justify-content-between align-items-center px-0 gap-3">
-                                        <a href="${escapeAttribute(buildReleaseHash(repo.name, release.tag))}"
-                                           class="text-decoration-none fw-medium">
-                                            ${escapeHtml(release.tag)}
-                                        </a>
-                                        <span class="badge bg-secondary rounded-pill">${this.getReleaseAssetCount(release)}</span>
-                                    </li>
-                                `).join('') : '<li class="list-group-item">No releases found</li>'}
-                                ${hasMoreReleases ? `
-                                    <li class="list-group-item px-0 text-center">
-                                        <button type="button"
-                                                class="btn btn-outline-primary btn-sm js-toggle-releases"
-                                                data-repo="${escapeAttribute(repo.name)}">
-                                            ${isExpanded ? 'Show fewer releases' : `Show ${remainingCount} more release${releaseText}`}
-                                        </button>
-                                    </li>
-                                ` : ''}
+                                ${releaseItemsHtml}
+                                ${toggleReleasesHtml}
                             </ul>
                         </div>
                     </div>
@@ -355,7 +380,7 @@ class UIManager {
         document.title = `${repo.name} ${release.tag} - ${DEFAULT_PAGE_TITLE}`;
 
         this.repositoryGrid.innerHTML = `
-            <div class="col-12">
+            <div class="col-12 release-detail">
                 <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
                     <a href="#" class="btn btn-outline-secondary btn-sm">All packages</a>
                     <a href="${escapeAttribute(releaseUrl)}" class="btn btn-outline-primary btn-sm" target="_blank" rel="noopener">
@@ -381,7 +406,7 @@ class UIManager {
                                 <tr>
                                     <th scope="col">Asset</th>
                                     <th scope="col" class="text-nowrap">Size</th>
-                                    <th scope="col" class="text-end">Links</th>
+                                    <th scope="col">Links</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -591,7 +616,7 @@ class LizardByteAssetsApp {
 
             // Initialize filter functionality before rendering the current route
             this.filterManager = new FilterManager(this.dataManager, this.uiManager);
-            window.addEventListener('hashchange', () => this.renderRoute());
+            globalThis.addEventListener('hashchange', () => this.renderRoute());
             this.renderRoute();
 
             const repositories = this.dataManager.getRepositories();
