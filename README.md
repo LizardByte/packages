@@ -1,7 +1,7 @@
 # LizardByte Package Repository
 
-This repository serves as a centralized storage for all packages and release assets from repositories within the
-LizardByte organization. All release assets are automatically downloaded and organized in the `dist` branch for
+This repository serves as a centralized package index and filtered release asset mirror for repositories within the
+LizardByte organization. Configured release assets are automatically downloaded and organized in the `dist` branch for
 easy access and distribution.
 
 ## Structure
@@ -34,18 +34,42 @@ dist/
 
 ## Workflow
 
-The release asset collection is handled by the `sync-release-assets.yml` workflow which:
+The release asset collection and GitHub Pages deployment are handled by the `update-pages.yml` workflow. Asset
+retention is controlled by `packages.config.json`.
 
 1. Discovers all repositories in the LizardByte organization
 2. Fetches release information for each repository
-3. Downloads missing release assets
-4. Generates hash files for integrity verification
-5. Commits changes to the `dist` branch
+3. Downloads configured release assets
+4. Removes previously stored assets that are no longer configured
+5. Generates hash files for integrity verification
+6. Commits changes to the `dist` branch
+7. Rebuilds GitHub Pages and publishes the filtered `dist` assets there too
+
+## Configuration
+
+`packages.config.json` controls which release assets are retained in `dist` and published to GitHub Pages.
+`packages.json` is still generated from GitHub release metadata for all discovered assets. `defaultInclude` is
+`false`, so repositories must opt in with asset patterns for files that should be mirrored.
+
+```json
+{
+  "defaultInclude": false,
+  "repositories": {
+    "Sunshine": {
+      "includeAssets": [
+        "*-installer.exe",
+        "*-installer.msi"
+      ]
+    }
+  }
+}
+```
 
 ## Usage
 
-All release assets are available in the `dist` branch of this repository. You can:
+Configured release assets are available in the `dist` branch of this repository. You can:
 
 - Browse assets directly on GitHub
 - Clone the `dist` branch for offline access
+- Use GitHub Pages direct URLs that mirror the `dist` layout, e.g. `/packages/<repo>/<tag>/<asset>`
 - Use the hash files to verify asset integrity

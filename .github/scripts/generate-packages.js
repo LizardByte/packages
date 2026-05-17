@@ -2,12 +2,76 @@ const fs = require('fs');
 const path = require('path');
 
 /**
- * Generate packages.json file by scanning the dist directory structure
- * @param {string} distPath - Path to the dist directory
- * @param {Array} repositoryMetadata - Repository metadata from sync process with archived status
+ * Build packages.json data with stats from repository entries.
+ * @param {Array} repositories - Repository data to include.
+ * @returns {Object} packages.json data.
+ */
+function buildPackagesData(repositories) {
+    // Sort repositories by name
+    repositories.sort((a, b) => a.name.localeCompare(b.name));
+
+    // Calculate totals
+    const totalReleases = repositories.reduce((sum, repo) => sum + repo.releases.length, 0);
+    const totalAssets = repositories.reduce((sum, repo) =>
+        sum + repo.releases.reduce((releaseSum, release) => releaseSum + release.assetCount, 0), 0
+    );
+
+    const packagesData = {
+        repositories: repositories,
+        stats: {
+            totalRepositories: repositories.length,
+            totalReleases: totalReleases,
+            totalAssets: totalAssets
+        }
+    };
+
+    console.log(`Generated packages data:`);
+    console.log(`  Repositories: ${repositories.length}`);
+    console.log(`  Total Releases: ${totalReleases}`);
+    console.log(`  Total Assets: ${totalAssets}`);
+
+    return packagesData;
+}
+
+/**
+ * Normalize GitHub-derived repository metadata for packages.json.
+ * @param {Array} repositoryMetadata - Repository metadata from the sync process.
+ * @returns {Array} Normalized repositories with sorted releases.
+ */
+function normalizeRepositoryMetadata(repositoryMetadata = []) {
+    return repositoryMetadata
+        .filter(repo => repo && Array.isArray(repo.releases) && repo.releases.length > 0)
+        .map(repo => {
+            const releases = repo.releases
+                .filter(release => release && release.assetCount > 0)
+                .map(release => ({
+                    tag: release.tag,
+                    assetCount: release.assetCount
+                }));
+
+            releases.sort((a, b) => b.tag.localeCompare(a.tag, undefined, { numeric: true, sensitivity: 'base' }));
+
+            return {
+                name: repo.name,
+                archived: Boolean(repo.archived),
+                releases
+            };
+        })
+        .filter(repo => repo.releases.length > 0);
+}
+
+/**
+ * Generate packages.json data from GitHub metadata, with a dist scan fallback.
+ * @param {string} distPath - Path to the dist directory.
+ * @param {Array} repositoryMetadata - GitHub-derived metadata for all release assets.
  * @returns {Object} Generated packages data
  */
 function generatePackagesJson(distPath = '.', repositoryMetadata = []) {
+    if (repositoryMetadata.length > 0) {
+        console.log('Generating packages.json from GitHub release metadata');
+        return buildPackagesData(normalizeRepositoryMetadata(repositoryMetadata));
+    }
+
     console.log(`Scanning dist directory: ${distPath}`);
 
     const repositories = [];
@@ -42,30 +106,7 @@ function generatePackagesJson(distPath = '.', repositoryMetadata = []) {
             }
         }
 
-        // Sort repositories by name
-        repositories.sort((a, b) => a.name.localeCompare(b.name));
-
-        // Calculate totals
-        const totalReleases = repositories.reduce((sum, repo) => sum + repo.releases.length, 0);
-        const totalAssets = repositories.reduce((sum, repo) =>
-            sum + repo.releases.reduce((releaseSum, release) => releaseSum + release.assetCount, 0), 0
-        );
-
-        const packagesData = {
-            repositories: repositories,
-            stats: {
-                totalRepositories: repositories.length,
-                totalReleases: totalReleases,
-                totalAssets: totalAssets
-            }
-        };
-
-        console.log(`Generated packages data:`);
-        console.log(`  Repositories: ${repositories.length}`);
-        console.log(`  Total Releases: ${totalReleases}`);
-        console.log(`  Total Assets: ${totalAssets}`);
-
-        return packagesData;
+        return buildPackagesData(repositories);
 
     } catch (error) {
         console.error('Error scanning dist directory:', error);
@@ -176,7 +217,9 @@ function writePackagesJson(packagesData, outputPath = './packages.json') {
 }
 
 module.exports = {
+    buildPackagesData,
     generatePackagesJson,
+    normalizeRepositoryMetadata,
     scanRepositoryDirectory,
     scanReleaseDirectory,
     writePackagesJson

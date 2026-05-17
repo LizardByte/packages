@@ -6,8 +6,10 @@ class RepositoryDataManager {
     constructor() {
         this.repositoryData = [];
         this.orgName = 'LizardByte'; // Organization name
-        this.distBranch = 'dist';
-        this.rawBase = 'https://raw.githubusercontent.com';
+        this.packagesPaths = [
+            'packages.json',
+            `https://raw.githubusercontent.com/${this.orgName}/packages/dist/packages.json`
+        ];
     }
 
     /**
@@ -17,8 +19,8 @@ class RepositoryDataManager {
         try {
             console.log('Fetching last successful workflow run...');
 
-            // Fetch workflow runs for the sync-release-assets.yml workflow
-            const response = await fetch(`https://api.github.com/repos/${this.orgName}/packages/actions/workflows/sync-release-assets.yml/runs?event=schedule&status=success&branch=master&per_page=1`);
+            // Fetch workflow runs for the update-pages.yml workflow
+            const response = await fetch(`https://api.github.com/repos/${this.orgName}/packages/actions/workflows/update-pages.yml/runs?event=schedule&status=success&branch=master&per_page=1`);
 
             if (!response.ok) {
                 console.warn(`Failed to fetch workflow runs: ${response.status}`);
@@ -42,20 +44,41 @@ class RepositoryDataManager {
     }
 
     /**
-     * Load repository data from packages.json in the dist branch
+     * Fetch packages.json from the first available source.
+     *
+     * The generated GitHub Pages site serves packages.json locally. ReadTheDocs
+     * previews only serve the template files, so they need the dist branch
+     * fallback to show repository data.
+     */
+    async fetchPackagesJson() {
+        let lastError = null;
+
+        for (const packagesPath of this.packagesPaths) {
+            try {
+                const response = await fetch(packagesPath);
+
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch packages.json from ${packagesPath}: ${response.status}`);
+                }
+
+                return await response.json();
+            } catch (error) {
+                console.warn(error.message);
+                lastError = error;
+            }
+        }
+
+        throw lastError || new Error('Failed to fetch packages.json');
+    }
+
+    /**
+     * Load repository data from the packages.json published with GitHub Pages
      */
     async loadRepositoryData() {
         try {
             console.log('Loading repository data from packages.json...');
 
-            // Fetch the packages.json file from the dist branch
-            const response = await fetch(`${this.rawBase}/${this.orgName}/packages/${this.distBranch}/packages.json`);
-
-            if (!response.ok) {
-                throw new Error(`Failed to fetch packages.json: ${response.status}`);
-            }
-
-            const data = await response.json();
+            const data = await this.fetchPackagesJson();
 
             // Validate the data structure
             if (!data.repositories || !Array.isArray(data.repositories)) {
