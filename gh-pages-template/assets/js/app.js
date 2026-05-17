@@ -6,8 +6,7 @@ class RepositoryDataManager {
     constructor() {
         this.repositoryData = [];
         this.orgName = 'LizardByte'; // Organization name
-        this.distBranch = 'dist';
-        this.rawBase = 'https://raw.githubusercontent.com';
+        this.packagesPath = 'packages.json';
     }
 
     /**
@@ -17,8 +16,8 @@ class RepositoryDataManager {
         try {
             console.log('Fetching last successful workflow run...');
 
-            // Fetch workflow runs for the sync-release-assets.yml workflow
-            const response = await fetch(`https://api.github.com/repos/${this.orgName}/packages/actions/workflows/sync-release-assets.yml/runs?event=schedule&status=success&branch=master&per_page=1`);
+            // Fetch workflow runs for the update-pages.yml workflow
+            const response = await fetch(`https://api.github.com/repos/${this.orgName}/packages/actions/workflows/update-pages.yml/runs?event=schedule&status=success&branch=master&per_page=1`);
 
             if (!response.ok) {
                 console.warn(`Failed to fetch workflow runs: ${response.status}`);
@@ -42,14 +41,13 @@ class RepositoryDataManager {
     }
 
     /**
-     * Load repository data from packages.json in the dist branch
+     * Load repository data from the packages.json published with GitHub Pages
      */
     async loadRepositoryData() {
         try {
             console.log('Loading repository data from packages.json...');
 
-            // Fetch the packages.json file from the dist branch
-            const response = await fetch(`${this.rawBase}/${this.orgName}/packages/${this.distBranch}/packages.json`);
+            const response = await fetch(this.packagesPath);
 
             if (!response.ok) {
                 throw new Error(`Failed to fetch packages.json: ${response.status}`);

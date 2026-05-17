@@ -2,15 +2,152 @@
  * Asset Synchronization Script
  * Main script for downloading and organizing release assets
  */
+const fs = require('fs');
 const path = require('path');
-const { ensureDir, fileExists, writeFile } = require('./file-utils');
+const { ensureDir, fileExists } = require('./file-utils');
 const { generateHashFiles } = require('./hash-utils');
 const { downloadAssetWithRetry } = require('./download-utils');
+const { loadPackageConfig, shouldIncludeAsset } = require('./package-config');
 
 /**
- * Process a single repository and download its release assets
+ * Check whether a filename is one of the generated hash sidecar files.
+ * @param {string} filename - File name to check.
+ * @returns {boolean} True when the file is a generated hash file.
  */
-async function processRepository(github, context, repo, repositoryData, totalAssets, isPullRequest = false, releaseLimit = null, maxNewAssets = 0, newAssetsDownloaded = 0) {
+function isHashFile(filename) {
+  return filename.endsWith('.sha256') ||
+    filename.endsWith('.sha512') ||
+    filename.endsWith('.md5');
+}
+
+/**
+ * Remove generated hash sidecars for a stored asset.
+ * @param {string} assetPath - Path to the primary asset file.
+ */
+function removeHashFiles(assetPath) {
+  ['sha256', 'sha512', 'md5'].forEach(hashType => {
+    const hashFile = `${assetPath}.${hashType}`;
+    if (fileExists(hashFile)) {
+      fs.unlinkSync(hashFile);
+      console.log(`Removed hash file: ${hashFile}`);
+    }
+  });
+}
+
+/**
+ * Remove an asset and any generated hash sidecars.
+ * @param {string} assetPath - Path to the primary asset file.
+ */
+function removeAsset(assetPath) {
+  if (fileExists(assetPath)) {
+    fs.unlinkSync(assetPath);
+    console.log(`Removed asset: ${assetPath}`);
+  }
+
+  removeHashFiles(assetPath);
+}
+
+/**
+ * Check whether a release directory still contains retained assets.
+ * @param {string} directoryPath - Release directory path.
+ * @returns {boolean} True when at least one non-hash asset remains.
+ */
+function hasAssetFiles(directoryPath) {
+  return fs.readdirSync(directoryPath, { withFileTypes: true })
+    .some(dirent => dirent.isFile() && !isHashFile(dirent.name));
+}
+
+/**
+ * Check whether another new asset may be downloaded during this run.
+ * @param {number} maxNewAssets - Maximum new assets to download; 0 means unlimited.
+ * @param {number} currentNewAssets - Number of new assets already downloaded.
+ * @param {number} releaseNewAssets - Number of new assets downloaded in the current release.
+ * @returns {boolean} True when another new asset download is allowed.
+ */
+function canDownloadNewAsset(maxNewAssets, currentNewAssets, releaseNewAssets) {
+  return maxNewAssets <= 0 || (currentNewAssets + releaseNewAssets) < maxNewAssets;
+}
+
+/**
+ * Remove stored files from dist that are no longer allowed by packages.config.json.
+ * This only affects mirrored files; release metadata is still generated from GitHub.
+ * @param {string} distPath - Path to the dist checkout.
+ * @param {Object} packageConfig - Loaded package config.
+ */
+function cleanupStoredAssets(distPath, packageConfig) {
+  console.log('Cleaning up stored assets excluded by package config...');
+
+  const distContents = fs.readdirSync(distPath, { withFileTypes: true });
+
+  for (const repoDir of distContents) {
+    if (!repoDir.isDirectory() || repoDir.name === '.git' || repoDir.name.startsWith('.')) {
+      continue;
+    }
+
+    const repoPath = path.join(distPath, repoDir.name);
+    const repoContents = fs.readdirSync(repoPath, { withFileTypes: true });
+
+    for (const releaseDir of repoContents) {
+      if (!releaseDir.isDirectory() || !releaseDir.name.startsWith('v')) {
+        continue;
+      }
+
+      const releasePath = path.join(repoPath, releaseDir.name);
+      const releaseContents = fs.readdirSync(releasePath, { withFileTypes: true });
+
+      for (const assetFile of releaseContents) {
+        if (!assetFile.isFile() || isHashFile(assetFile.name)) {
+          continue;
+        }
+
+        if (!shouldIncludeAsset(packageConfig, repoDir.name, assetFile.name)) {
+          removeAsset(path.join(releasePath, assetFile.name));
+        }
+      }
+
+      for (const hashFile of fs.readdirSync(releasePath, { withFileTypes: true })) {
+        if (!hashFile.isFile() || !isHashFile(hashFile.name)) {
+          continue;
+        }
+
+        const assetName = hashFile.name.replace(/\.(sha256|sha512|md5)$/, '');
+        if (!fileExists(path.join(releasePath, assetName))) {
+          const hashPath = path.join(releasePath, hashFile.name);
+          fs.unlinkSync(hashPath);
+          console.log(`Removed orphan hash file: ${hashPath}`);
+        }
+      }
+
+      if (!hasAssetFiles(releasePath)) {
+        fs.rmSync(releasePath, { recursive: true, force: true });
+        console.log(`Removed empty release directory: ${releasePath}`);
+      }
+    }
+
+    if (fs.readdirSync(repoPath).length === 0) {
+      fs.rmSync(repoPath, { recursive: true, force: true });
+      console.log(`Removed empty repository directory: ${repoPath}`);
+    }
+  }
+
+  console.log('Package config cleanup completed successfully');
+}
+
+/**
+ * Process a single repository, collecting all release metadata while downloading only configured assets.
+ * @param {Object} github - GitHub API client.
+ * @param {Object} context - GitHub Actions context.
+ * @param {Object} repo - Repository API response object.
+ * @param {Array} repositoryData - Accumulated package metadata.
+ * @param {number} totalAssets - Current total release asset count.
+ * @param {Object} packageConfig - Loaded package config.
+ * @param {boolean} isPullRequest - Whether this is a pull request run.
+ * @param {number|null} releaseLimit - Optional release limit for pull request runs.
+ * @param {number} maxNewAssets - Maximum new assets to download.
+ * @param {number} newAssetsDownloaded - Number of new assets already downloaded.
+ * @returns {Promise<{totalAssets: number, processedReleases: number, newAssetsDownloaded: number}>}
+ */
+async function processRepository(github, context, repo, repositoryData, totalAssets, packageConfig, isPullRequest = false, releaseLimit = null, maxNewAssets = 0, newAssetsDownloaded = 0) {
   console.log(`Processing repository: ${repo.name}`);
 
   let processedReleasesWithAssets = 0;
@@ -43,19 +180,13 @@ async function processRepository(github, context, repo, repositoryData, totalAss
     };
 
     for (const release of publishedReleases) {
-      // Check if we've reached the asset limit globally
-      if (maxNewAssets > 0 && (newAssetsDownloaded + repoNewAssets) >= maxNewAssets) {
-        console.log(`Reached maximum new assets limit (${maxNewAssets}). Stopping processing for ${repo.name}.`);
-        break;
-      }
-
       // For pull requests, stop after processing the specified number of releases with assets
       if (isPullRequest && releaseLimit && processedReleasesWithAssets >= releaseLimit) {
         console.log(`PR mode: Reached limit of ${releaseLimit} releases with assets for ${repo.name}`);
         break;
       }
 
-      const result = await processRelease(repo.name, release, maxNewAssets, newAssetsDownloaded + repoNewAssets);
+      const result = await processRelease(repo.name, release, packageConfig, maxNewAssets, newAssetsDownloaded + repoNewAssets);
       const assetCount = result.assetCount;
       const newAssets = result.newAssets;
 
@@ -83,9 +214,15 @@ async function processRepository(github, context, repo, repositoryData, totalAss
 }
 
 /**
- * Process a single release and download its assets
+ * Process a single release, counting all release assets while downloading only configured assets.
+ * @param {string} repoName - Repository name.
+ * @param {Object} release - GitHub release API response object.
+ * @param {Object} packageConfig - Loaded package config.
+ * @param {number} maxNewAssets - Maximum new assets to download.
+ * @param {number} currentNewAssets - Number of new assets already downloaded.
+ * @returns {Promise<{assetCount: number, newAssets: number}>}
  */
-async function processRelease(repoName, release, maxNewAssets = 0, currentNewAssets = 0) {
+async function processRelease(repoName, release, packageConfig, maxNewAssets = 0, currentNewAssets = 0) {
   console.log(`Processing release: ${release.tag_name}`);
 
   if (release.assets.length === 0) {
@@ -93,23 +230,29 @@ async function processRelease(repoName, release, maxNewAssets = 0, currentNewAss
     return { assetCount: 0, newAssets: 0 };
   }
 
+  const assetCount = release.assets.length;
+  const includedAssets = release.assets.filter(asset => shouldIncludeAsset(packageConfig, repoName, asset.name));
+
+  if (includedAssets.length === 0) {
+    console.log(`No configured assets found for release ${release.tag_name}`);
+    return { assetCount, newAssets: 0 };
+  }
+
   // Create directory structure
   const releaseDir = path.join(repoName, release.tag_name);
   ensureDir(releaseDir);
 
-  let assetCount = 0;
   let newAssets = 0;
 
-  for (const asset of release.assets) {
+  for (const asset of includedAssets) {
     // Check if we've reached the new assets download limit
-    if (maxNewAssets > 0 && (currentNewAssets + newAssets) >= maxNewAssets) {
+    if (!canDownloadNewAsset(maxNewAssets, currentNewAssets, newAssets)) {
       console.log(`Reached maximum new assets limit (${maxNewAssets}) for this run. Stopping asset processing for release ${release.tag_name}.`);
       break;
     }
 
     const result = await processAsset(releaseDir, asset);
     if (result.downloaded) {
-      assetCount++;
       if (result.isNew) {
         newAssets++;
       }
@@ -121,6 +264,9 @@ async function processRelease(repoName, release, maxNewAssets = 0, currentNewAss
 
 /**
  * Process a single asset - download and generate hashes if not exists
+ * @param {string} releaseDir - Directory where the asset should be stored.
+ * @param {Object} asset - GitHub release asset API response object.
+ * @returns {Promise<{downloaded: boolean, isNew: boolean}>}
  */
 async function processAsset(releaseDir, asset) {
   const assetPath = path.join(releaseDir, asset.name);
@@ -135,16 +281,7 @@ async function processAsset(releaseDir, asset) {
     if (fileExists(assetPath)) {
       console.log(`Removing existing oversized file: ${assetPath}`);
       try {
-        const fs = require('fs');
-        fs.unlinkSync(assetPath);
-        // Also remove associated hash files
-        ['sha256', 'sha512', 'md5'].forEach(hashType => {
-          const hashFile = `${assetPath}.${hashType}`;
-          if (fileExists(hashFile)) {
-            fs.unlinkSync(hashFile);
-            console.log(`Removed hash file: ${hashFile}`);
-          }
-        });
+        removeAsset(assetPath);
       } catch (error) {
         console.error(`Failed to remove oversized file ${assetPath}: ${error.message}`);
       }
@@ -159,20 +296,11 @@ async function processAsset(releaseDir, asset) {
 
     // Check if existing file is over size limit and remove it
     try {
-      const fs = require('fs');
       const stats = fs.statSync(assetPath);
       if (stats.size > maxSizeBytes) {
         const sizeMB = (stats.size / (1024 * 1024)).toFixed(2);
         console.log(`Removing existing oversized file: ${assetPath} (${sizeMB}MB)`);
-        fs.unlinkSync(assetPath);
-        // Also remove associated hash files
-        ['sha256', 'sha512', 'md5'].forEach(hashType => {
-          const hashFile = `${assetPath}.${hashType}`;
-          if (fileExists(hashFile)) {
-            fs.unlinkSync(hashFile);
-            console.log(`Removed hash file: ${hashFile}`);
-          }
-        });
+        removeAsset(assetPath);
         // Continue to download the asset since we removed the oversized one
         // But first check again if the new asset would be over the limit
         if (asset.size > maxSizeBytes) {
@@ -213,7 +341,12 @@ async function processAsset(releaseDir, asset) {
 }
 
 /**
- * Main function to sync all release assets
+ * Sync package metadata for all release assets and mirror only configured assets to dist.
+ * @param {Object} github - GitHub API client.
+ * @param {Object} context - GitHub Actions context.
+ * @param {boolean} isPullRequest - Whether this is a pull request run.
+ * @param {number} maxNewAssets - Maximum new assets to download.
+ * @returns {Promise<Array>} Repository metadata for packages.json.
  */
 async function syncReleaseAssets(github, context, isPullRequest = false, maxNewAssets = 0) {
   console.log('Getting repositories from organization...');
@@ -237,6 +370,9 @@ async function syncReleaseAssets(github, context, isPullRequest = false, maxNewA
 
   console.log(`Found ${repos.length} repositories`);
 
+  const packageConfig = loadPackageConfig(process.cwd());
+  cleanupStoredAssets('.', packageConfig);
+
   const repositoryData = [];
   let totalAssets = 0;
   let totalProcessedReleases = 0;
@@ -244,18 +380,13 @@ async function syncReleaseAssets(github, context, isPullRequest = false, maxNewA
 
   // Process each repository
   for (const repo of repos) {
-    // Check if we've reached the asset limit
-    if (maxNewAssets > 0 && newAssetsDownloaded >= maxNewAssets) {
-      console.log(`Reached maximum new assets limit (${maxNewAssets}). Stopping processing.`);
-      break;
-    }
-
     const result = await processRepository(
       github,
       context,
       repo,
       repositoryData,
       totalAssets,
+      packageConfig,
       isPullRequest,
       isPullRequest ? 2 : null,
       maxNewAssets,
@@ -283,5 +414,6 @@ async function syncReleaseAssets(github, context, isPullRequest = false, maxNewA
 }
 
 module.exports = {
+  canDownloadNewAsset,
   syncReleaseAssets
 };
