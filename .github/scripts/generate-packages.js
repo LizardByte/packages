@@ -2,6 +2,15 @@ const fs = require('fs');
 const path = require('path');
 
 /**
+ * Encode path segments for a browser URL without changing the dist directory layout.
+ * @param {...string} segments - URL path segments.
+ * @returns {string} Relative URL for GitHub Pages.
+ */
+function encodeDirectAssetUrl(...segments) {
+    return segments.map(segment => encodeURIComponent(segment)).join('/');
+}
+
+/**
  * Build packages.json data with stats from repository entries.
  * @param {Array} repositories - Repository data to include.
  * @returns {Object} packages.json data.
@@ -13,10 +22,12 @@ function buildPackagesData(repositories) {
     // Calculate totals
     const totalReleases = repositories.reduce((sum, repo) => sum + repo.releases.length, 0);
     const totalAssets = repositories.reduce((sum, repo) =>
-        sum + repo.releases.reduce((releaseSum, release) => releaseSum + release.assetCount, 0), 0
+        sum + repo.releases.reduce((releaseSum, release) =>
+            releaseSum + (release.assetCount || (Array.isArray(release.assets) ? release.assets.length : 0)), 0), 0
     );
 
     const packagesData = {
+        generatedAt: new Date().toISOString(),
         repositories: repositories,
         stats: {
             totalRepositories: repositories.length,
@@ -43,17 +54,40 @@ function normalizeRepositoryMetadata(repositoryMetadata = []) {
         .filter(repo => repo && Array.isArray(repo.releases) && repo.releases.length > 0)
         .map(repo => {
             const releases = repo.releases
-                .filter(release => release && release.assetCount > 0)
-                .map(release => ({
-                    tag: release.tag,
-                    assetCount: release.assetCount
-                }));
+                .filter(release => release && (release.assetCount > 0 || (Array.isArray(release.assets) && release.assets.length > 0)))
+                .map(release => {
+                    const assets = Array.isArray(release.assets)
+                        ? release.assets
+                            .filter(asset => asset && asset.name)
+                            .map(asset => ({
+                                name: asset.name,
+                                size: asset.size,
+                                githubUrl: asset.githubUrl || asset.browserDownloadUrl,
+                                directUrl: asset.directUrl
+                            }))
+                        : [];
+
+                    const releaseData = {
+                        tag: release.tag,
+                        url: release.url,
+                        publishedAt: release.publishedAt,
+                        assetCount: release.assetCount || assets.length
+                    };
+
+                    if (assets.length > 0) {
+                        assets.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }));
+                        releaseData.assets = assets;
+                    }
+
+                    return releaseData;
+                });
 
             releases.sort((a, b) => b.tag.localeCompare(a.tag, undefined, { numeric: true, sensitivity: 'base' }));
 
             return {
                 name: repo.name,
                 archived: Boolean(repo.archived),
+                url: repo.url,
                 releases
             };
         })
@@ -186,9 +220,23 @@ function scanReleaseDirectory(releasePath) {
         });
 
         if (assetFiles.length > 0) {
+            const assets = assetFiles
+                .map(assetFile => {
+                    const assetPath = path.join(releasePath, assetFile.name);
+                    const repoName = path.basename(path.dirname(releasePath));
+
+                    return {
+                        name: assetFile.name,
+                        size: fs.statSync(assetPath).size,
+                        directUrl: encodeDirectAssetUrl(repoName, releaseTag, assetFile.name)
+                    };
+                })
+                .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }));
+
             return {
                 tag: releaseTag,
-                assetCount: assetFiles.length
+                assetCount: assetFiles.length,
+                assets
             };
         }
 
@@ -218,6 +266,7 @@ function writePackagesJson(packagesData, outputPath = './packages.json') {
 
 module.exports = {
     buildPackagesData,
+    encodeDirectAssetUrl,
     generatePackagesJson,
     normalizeRepositoryMetadata,
     scanRepositoryDirectory,

@@ -58,7 +58,7 @@ jobs:
           git init --initial-branch=dist
           git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
 
-      - name: Get organization repositories and download assets
+      - name: Get organization repositories, download assets, and update package index
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3  # v9.0.0
         with:
           github-token: ${{ secrets.GH_BOT_TOKEN || github.token }}
@@ -75,35 +75,21 @@ jobs:
             // Change working directory to dist for file operations
             process.chdir('./dist');
 
-            // Run the asset synchronization and store metadata
+            // Run the asset synchronization and write packages.json
             await syncAssetsWithMetadata(github, context, isPullRequest, maxNewAssets);
-
-      - name: Generate packages.json
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3  # v9.0.0
-        with:
-          github-token: ${{ secrets.GH_BOT_TOKEN || github.token }}
-          script: |
-            // Import the packages generation module
-            const { generatePackagesWithCleanup } = require('./.github/scripts/generate-packages-with-cleanup.js');
-
-            console.log('Generating packages.json from dist directory...');
-
-            // Change to dist directory
-            process.chdir('./dist');
-
-            // Generate packages.json with cleanup
-            generatePackagesWithCleanup('.');
 
       - name: GitHub Commit & Push
         if: github.event_name != 'pull_request'
         uses: actions-js/push@5a7cbd780d82c0c937b5977586e641b2fd94acc5  # v1.5
         with:
+          amend: ${{ steps.dist_branch.outputs.exists == 'true' }}
           author_email: ${{ secrets.GH_BOT_EMAIL }}
           author_name: ${{ vars.GH_BOT_NAME }}
           branch: dist
           directory: dist
+          force: ${{ steps.dist_branch.outputs.exists == 'true' }}
           github_token: ${{ secrets.GH_BOT_TOKEN }}
-          message: 'Update release assets - ${{ github.run_id }}'
+          message: 'Update release assets'
 
       - name: Prepare artifact
         run: |
