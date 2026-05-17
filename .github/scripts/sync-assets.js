@@ -8,6 +8,7 @@ const { ensureDir, fileExists } = require('./file-utils');
 const { generateHashFiles } = require('./hash-utils');
 const { downloadAssetWithRetry } = require('./download-utils');
 const { loadPackageConfig, shouldIncludeAsset } = require('./package-config');
+const { cleanupNonVPrefixedReleases } = require('./cleanup-releases');
 
 /**
  * Check whether a filename is one of the generated hash sidecar files.
@@ -66,6 +67,36 @@ function hasAssetFiles(directoryPath) {
  */
 function canDownloadNewAsset(maxNewAssets, currentNewAssets, releaseNewAssets) {
   return maxNewAssets <= 0 || (currentNewAssets + releaseNewAssets) < maxNewAssets;
+}
+
+/**
+ * Encode path segments for a browser URL without changing the dist directory layout.
+ * @param {...string} segments - URL path segments.
+ * @returns {string} Relative URL for GitHub Pages.
+ */
+function encodeDirectAssetUrl(...segments) {
+  return segments.map(segment => encodeURIComponent(segment)).join('/');
+}
+
+/**
+ * Build public metadata for a GitHub release asset.
+ * @param {string} repoName - Repository name.
+ * @param {string} releaseTag - Release tag.
+ * @param {Object} asset - GitHub release asset API response object.
+ * @returns {Object} Package index asset metadata.
+ */
+function buildAssetMetadata(repoName, releaseTag, asset) {
+  const assetData = {
+    name: asset.name,
+    size: asset.size,
+    githubUrl: asset.browser_download_url
+  };
+
+  if (fileExists(path.join(repoName, releaseTag, asset.name))) {
+    assetData.directUrl = encodeDirectAssetUrl(repoName, releaseTag, asset.name);
+  }
+
+  return assetData;
 }
 
 /**
@@ -176,6 +207,7 @@ async function processRepository(github, context, repo, repositoryData, totalAss
     const repoData = {
       name: repo.name,
       archived: repo.archived,
+      url: repo.html_url,
       releases: []
     };
 
@@ -196,7 +228,10 @@ async function processRepository(github, context, repo, repositoryData, totalAss
       if (assetCount > 0) {
         repoData.releases.push({
           tag: release.tag_name,
-          assetCount: assetCount
+          url: release.html_url,
+          publishedAt: release.published_at,
+          assetCount: assetCount,
+          assets: result.assets
         });
         processedReleasesWithAssets++;
       }
@@ -220,46 +255,46 @@ async function processRepository(github, context, repo, repositoryData, totalAss
  * @param {Object} packageConfig - Loaded package config.
  * @param {number} maxNewAssets - Maximum new assets to download.
  * @param {number} currentNewAssets - Number of new assets already downloaded.
- * @returns {Promise<{assetCount: number, newAssets: number}>}
+ * @returns {Promise<{assetCount: number, newAssets: number, assets: Array}>}
  */
 async function processRelease(repoName, release, packageConfig, maxNewAssets = 0, currentNewAssets = 0) {
   console.log(`Processing release: ${release.tag_name}`);
 
   if (release.assets.length === 0) {
     console.log(`No assets found for release ${release.tag_name}`);
-    return { assetCount: 0, newAssets: 0 };
+    return { assetCount: 0, newAssets: 0, assets: [] };
   }
 
   const assetCount = release.assets.length;
   const includedAssets = release.assets.filter(asset => shouldIncludeAsset(packageConfig, repoName, asset.name));
+  let newAssets = 0;
 
   if (includedAssets.length === 0) {
     console.log(`No configured assets found for release ${release.tag_name}`);
-    return { assetCount, newAssets: 0 };
-  }
+  } else {
+    // Create directory structure
+    const releaseDir = path.join(repoName, release.tag_name);
+    ensureDir(releaseDir);
 
-  // Create directory structure
-  const releaseDir = path.join(repoName, release.tag_name);
-  ensureDir(releaseDir);
+    for (const asset of includedAssets) {
+      // Check if we've reached the new assets download limit
+      if (!canDownloadNewAsset(maxNewAssets, currentNewAssets, newAssets)) {
+        console.log(`Reached maximum new assets limit (${maxNewAssets}) for this run. Stopping asset processing for release ${release.tag_name}.`);
+        break;
+      }
 
-  let newAssets = 0;
-
-  for (const asset of includedAssets) {
-    // Check if we've reached the new assets download limit
-    if (!canDownloadNewAsset(maxNewAssets, currentNewAssets, newAssets)) {
-      console.log(`Reached maximum new assets limit (${maxNewAssets}) for this run. Stopping asset processing for release ${release.tag_name}.`);
-      break;
-    }
-
-    const result = await processAsset(releaseDir, asset);
-    if (result.downloaded) {
-      if (result.isNew) {
+      const result = await processAsset(releaseDir, asset);
+      if (result.downloaded && result.isNew) {
         newAssets++;
       }
     }
   }
 
-  return { assetCount, newAssets };
+  const assets = release.assets
+    .map(asset => buildAssetMetadata(repoName, release.tag_name, asset))
+    .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }));
+
+  return { assetCount, newAssets, assets };
 }
 
 /**
@@ -371,6 +406,7 @@ async function syncReleaseAssets(github, context, isPullRequest = false, maxNewA
   console.log(`Found ${repos.length} repositories`);
 
   const packageConfig = loadPackageConfig(process.cwd());
+  cleanupNonVPrefixedReleases('.');
   cleanupStoredAssets('.', packageConfig);
 
   const repositoryData = [];
