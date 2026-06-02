@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-02T18:33:09.207Z",
+  "generatedAt": "2026-06-02T21:42:25.724Z",
   "repositories": [
     {
       "name": "build-deps",
@@ -5130,6 +5130,19 @@
       "url": "https://github.com/LizardByte/Themerr-jellyfin",
       "releases": [
         {
+          "tag": "v2026.601.2038.13",
+          "url": "https://github.com/LizardByte/Themerr-jellyfin/releases/tag/v2026.601.2038.13",
+          "publishedAt": "2026-06-01T20:39:41Z",
+          "assetCount": 1,
+          "assets": [
+            {
+              "name": "themerr-jellyfin.zip",
+              "size": 2187558,
+              "githubUrl": "https://github.com/LizardByte/Themerr-jellyfin/releases/download/v2026.601.2038.13/themerr-jellyfin.zip"
+            }
+          ]
+        },
+        {
           "tag": "v2026.428.1753.46",
           "url": "https://github.com/LizardByte/Themerr-jellyfin/releases/tag/v2026.428.1753.46",
           "publishedAt": "2026-04-28T17:56:07Z",
@@ -7722,7 +7735,7 @@
   ],
   "stats": {
     "totalRepositories": 10,
-    "totalReleases": 333,
-    "totalAssets": 993
+    "totalReleases": 334,
+    "totalAssets": 994
   }
 }
