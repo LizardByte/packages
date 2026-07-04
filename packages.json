@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-04T00:03:28.450Z",
+  "generatedAt": "2026-07-04T04:28:16.592Z",
   "repositories": [
     {
       "name": "build-deps",
@@ -1095,6 +1095,34 @@
       "archived": false,
       "url": "https://github.com/LizardByte/libdisplaydevice",
       "releases": [
+        {
+          "tag": "v2026.630.230908",
+          "url": "https://github.com/LizardByte/libdisplaydevice/releases/tag/v2026.630.230908",
+          "publishedAt": "2026-07-04T02:27:53Z",
+          "assetCount": 4,
+          "assets": [
+            {
+              "name": "test_libdisplaydevice-Linux",
+              "size": 26672496,
+              "githubUrl": "https://github.com/LizardByte/libdisplaydevice/releases/download/v2026.630.230908/test_libdisplaydevice-Linux"
+            },
+            {
+              "name": "test_libdisplaydevice-macOS",
+              "size": 20275832,
+              "githubUrl": "https://github.com/LizardByte/libdisplaydevice/releases/download/v2026.630.230908/test_libdisplaydevice-macOS"
+            },
+            {
+              "name": "test_libdisplaydevice-Windows-AMD64.exe",
+              "size": 125227807,
+              "githubUrl": "https://github.com/LizardByte/libdisplaydevice/releases/download/v2026.630.230908/test_libdisplaydevice-Windows-AMD64.exe"
+            },
+            {
+              "name": "test_libdisplaydevice-Windows-ARM64.exe",
+              "size": 85496320,
+              "githubUrl": "https://github.com/LizardByte/libdisplaydevice/releases/download/v2026.630.230908/test_libdisplaydevice-Windows-ARM64.exe"
+            }
+          ]
+        },
         {
           "tag": "v2026.610.200812",
           "url": "https://github.com/LizardByte/libdisplaydevice/releases/tag/v2026.610.200812",
@@ -7826,7 +7854,7 @@
   ],
   "stats": {
     "totalRepositories": 10,
-    "totalReleases": 336,
-    "totalAssets": 1009
+    "totalReleases": 337,
+    "totalAssets": 1013
   }
 }
