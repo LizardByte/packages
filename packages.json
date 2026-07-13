@@ -1,74 +1,11 @@
 {
-  "generatedAt": "2026-07-13T11:52:29.529Z",
+  "generatedAt": "2026-07-13T14:06:59.937Z",
   "repositories": [
     {
       "name": "build-deps",
       "archived": false,
       "url": "https://github.com/LizardByte/build-deps",
       "releases": [
-        {
-          "tag": "v2026.713.1051",
-          "url": "https://github.com/LizardByte/build-deps/releases/tag/v2026.713.1051",
-          "publishedAt": "2026-07-13T02:01:39Z",
-          "assetCount": 11,
-          "assets": [
-            {
-              "name": "Alpine-aarch64-ffmpeg.tar.gz",
-              "size": 19307185,
-              "githubUrl": "https://github.com/LizardByte/build-deps/releases/download/v2026.713.1051/Alpine-aarch64-ffmpeg.tar.gz"
-            },
-            {
-              "name": "Alpine-x86_64-ffmpeg.tar.gz",
-              "size": 20364827,
-              "githubUrl": "https://github.com/LizardByte/build-deps/releases/download/v2026.713.1051/Alpine-x86_64-ffmpeg.tar.gz"
-            },
-            {
-              "name": "Darwin-arm64-ffmpeg.tar.gz",
-              "size": 11706806,
-              "githubUrl": "https://github.com/LizardByte/build-deps/releases/download/v2026.713.1051/Darwin-arm64-ffmpeg.tar.gz"
-            },
-            {
-              "name": "Darwin-x86_64-ffmpeg.tar.gz",
-              "size": 13463748,
-              "githubUrl": "https://github.com/LizardByte/build-deps/releases/download/v2026.713.1051/Darwin-x86_64-ffmpeg.tar.gz"
-            },
-            {
-              "name": "FreeBSD-aarch64-ffmpeg.tar.gz",
-              "size": 14213671,
-              "githubUrl": "https://github.com/LizardByte/build-deps/releases/download/v2026.713.1051/FreeBSD-aarch64-ffmpeg.tar.gz"
-            },
-            {
-              "name": "FreeBSD-amd64-ffmpeg.tar.gz",
-              "size": 16091268,
-              "githubUrl": "https://github.com/LizardByte/build-deps/releases/download/v2026.713.1051/FreeBSD-amd64-ffmpeg.tar.gz"
-            },
-            {
-              "name": "Linux-aarch64-ffmpeg.tar.gz",
-              "size": 18240269,
-              "githubUrl": "https://github.com/LizardByte/build-deps/releases/download/v2026.713.1051/Linux-aarch64-ffmpeg.tar.gz"
-            },
-            {
-              "name": "Linux-ppc64le-ffmpeg.tar.gz",
-              "size": 19708550,
-              "githubUrl": "https://github.com/LizardByte/build-deps/releases/download/v2026.713.1051/Linux-ppc64le-ffmpeg.tar.gz"
-            },
-            {
-              "name": "Linux-x86_64-ffmpeg.tar.gz",
-              "size": 19308648,
-              "githubUrl": "https://github.com/LizardByte/build-deps/releases/download/v2026.713.1051/Linux-x86_64-ffmpeg.tar.gz"
-            },
-            {
-              "name": "Windows-AMD64-ffmpeg.tar.gz",
-              "size": 17845545,
-              "githubUrl": "https://github.com/LizardByte/build-deps/releases/download/v2026.713.1051/Windows-AMD64-ffmpeg.tar.gz"
-            },
-            {
-              "name": "Windows-ARM64-ffmpeg.tar.gz",
-              "size": 13656807,
-              "githubUrl": "https://github.com/LizardByte/build-deps/releases/download/v2026.713.1051/Windows-ARM64-ffmpeg.tar.gz"
-            }
-          ]
-        },
         {
           "tag": "v2026.621.21936",
           "url": "https://github.com/LizardByte/build-deps/releases/tag/v2026.621.21936",
@@ -7917,7 +7854,7 @@
   ],
   "stats": {
     "totalRepositories": 10,
-    "totalReleases": 338,
-    "totalAssets": 1024
+    "totalReleases": 337,
+    "totalAssets": 1013
   }
 }
