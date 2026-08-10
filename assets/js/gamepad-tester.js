@@ -13,10 +13,12 @@ document.addEventListener('DOMContentLoaded', function() {
     let gamepads = {};
     let activeGamepadIndex = null;
     let animationFrameId = null;
-    let gamepadSelector = document.getElementById('gamepad-selector');
-    let gamepadSelectorContainer = document.getElementById('gamepad-selector-container');
-    let gamepadInfoSection = document.getElementById('gamepad-info');
-    let gamepadStatus = document.getElementById('gamepad-status');
+    const gamepadSelector = document.getElementById('gamepad-selector');
+    const gamepadSelectorContainer = document.getElementById('gamepad-selector-container');
+    const gamepadInfoSection = document.getElementById('gamepad-info');
+    const gamepadTester = document.getElementById('GamepadTester');
+    const gamepadStatus = document.getElementById('gamepad-status');
+    const gamepadStatusMessage = document.getElementById('gamepad-status-message');
     let gamepadVisualButtons = new Map();
     let gamepadVisualSticks = [];
     let gamepadVisualTriggers = new Map();
@@ -105,9 +107,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Check if the Gamepad API is supported
     if (!gamepadHelper.isSupported()) {
-        gamepadStatus.textContent = 'Gamepad API not supported in this browser';
-        gamepadStatus.classList.remove('alert-warning');
-        gamepadStatus.classList.add('alert-danger');
+        updateStatus('The Gamepad API is not supported in this browser.', 'danger');
         return;
     }
 
@@ -186,65 +186,40 @@ document.addEventListener('DOMContentLoaded', function() {
         stopVibration();
     });
 
-    document.getElementById('vibration-weak').addEventListener('input', function() {
-        document.getElementById('weak-value').textContent = this.value;
-    });
-
-    document.getElementById('vibration-strong').addEventListener('input', function() {
-        document.getElementById('strong-value').textContent = this.value;
-    });
-
     // Update gamepad selector buttons
     function updateGamepadSelector() {
         gamepadSelector.innerHTML = '';
 
         const gamepadIndices = Object.keys(gamepads);
+        const hasGamepads = gamepadIndices.length > 0;
+        gamepadTester.classList.toggle('has-gamepad', hasGamepads);
 
-        if (gamepadIndices.length > 0) {
-            gamepadSelectorContainer.style.display = 'block';
-            gamepadInfoSection.style.display = 'flex';
+        if (hasGamepads) {
+            gamepadSelectorContainer.style.removeProperty('display');
+            gamepadInfoSection.style.removeProperty('display');
 
             gamepadIndices.forEach(index => {
-                const card = document.createElement('div');
-                card.className = 'card gamepad-selector-card';
+                const card = document.createElement('button');
+                card.className = 'gamepad-selector-card';
                 card.dataset.index = index;
-                card.style.cursor = 'pointer';
-                card.style.minWidth = '200px';
-                card.style.maxWidth = '300px';
-                card.style.borderWidth = '2px'; // Always use 2px border
+                card.type = 'button';
 
                 const isActive = activeGamepadIndex !== null && Number.parseInt(index) === activeGamepadIndex;
-
-                // Mark active gamepad card
-                if (isActive) {
-                    card.classList.add('border-primary');
-                } else {
-                    card.classList.add('border-secondary');
-                }
-
-                const cardBody = document.createElement('div');
-                cardBody.className = 'card-body p-2';
+                card.setAttribute('aria-pressed', isActive.toString());
 
                 const gamepadInfo = gamepads[index];
                 const typeInfo = gamepadHelper.getGamepadInfo(gamepadInfo.id);
+                card.setAttribute('aria-label', `${isActive ? 'Active controller' : 'Select controller'}: ${typeInfo.name}`);
 
-                cardBody.innerHTML = `
-                    <div class="d-flex align-items-center">
-                        <div class="me-2">
-                            <i class="fas fa-gamepad fa-2x ${isActive ? 'text-primary' : ''}"></i>
-                        </div>
-                        <div class="flex-grow-1">
-                            <div class="fw-bold small text-truncate">${typeInfo.name}</div>
-                            <div class="opacity-75" style="font-size: 0.75rem;">Index: ${index}</div>
-                            <div class="opacity-75" style="font-size: 0.7rem;">${gamepadInfo.buttons.length} buttons, ${gamepadInfo.axes.length} axes</div>
-                        </div>
-                        <div class="ms-2" style="min-width: 50px; text-align: right;">
-                            ${isActive ? '<span class="badge bg-primary">Active</span>' : ''}
-                        </div>
-                    </div>
+                card.innerHTML = `
+                    <span class="gamepad-selector-icon" aria-hidden="true"><i class="fas fa-gamepad"></i></span>
+                    <span>
+                        <span class="gamepad-selector-name">${typeInfo.name}</span>
+                        <span class="gamepad-selector-meta">Index ${index} · ${gamepadInfo.buttons.length} buttons · ${gamepadInfo.axes.length} axes</span>
+                    </span>
+                    ${isActive ? '<span class="gamepad-selector-active">Active</span>' : '<span></span>'}
                 `;
 
-                card.appendChild(cardBody);
                 gamepadSelector.appendChild(card);
             });
 
@@ -438,6 +413,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const buttonDiv = document.createElement('div');
             buttonDiv.className = 'circular-button';
             buttonDiv.id = `button-${i}`;
+            buttonDiv.setAttribute('aria-label', `${buttonName} button value`);
+            buttonDiv.setAttribute('aria-valuemax', '1');
+            buttonDiv.setAttribute('aria-valuemin', '0');
+            buttonDiv.setAttribute('aria-valuenow', '0');
+            buttonDiv.setAttribute('role', 'progressbar');
 
             // Create the progress elements
             const progressLeft = document.createElement('span');
@@ -489,35 +469,33 @@ document.addEventListener('DOMContentLoaded', function() {
         const controllerType = gamepadHelper.detectControllerType(gamepad.id);
 
         for (let i = 0; i < gamepad.axes.length; i++) {
-            const colDiv = document.createElement('div');
-            colDiv.className = 'col-md-6 col-lg-3 mb-3';
+            const axis = document.createElement('div');
+            axis.className = 'gamepad-axis';
 
             const axisName = gamepadHelper.getAxisName(controllerType, i);
 
-            colDiv.innerHTML = `
-                <div class="mb-1">${axisName}: <span id="axis-value-${i}">0.00</span></div>
-                <div class="progress" style="height: 20px">
-                    <div id="axis-progress-${i}" class="progress-bar bg-info" role="progressbar"
-                         style="width: 50%;" aria-valuenow="0" aria-valuemin="-1" aria-valuemax="1"></div>
+            axis.innerHTML = `
+                <div class="gamepad-axis-header">
+                    <span>${axisName}</span>
+                    <output id="axis-value-${i}" class="gamepad-axis-value">0.00</output>
+                </div>
+                <div id="axis-meter-${i}" class="gamepad-axis-track" role="progressbar"
+                     aria-label="${axisName}" aria-valuenow="0" aria-valuemin="-1" aria-valuemax="1">
+                    <span class="gamepad-axis-center" aria-hidden="true"></span>
+                    <span id="axis-progress-${i}" class="gamepad-axis-fill" aria-hidden="true"></span>
                 </div>
             `;
 
-            axesContainer.appendChild(colDiv);
+            axesContainer.appendChild(axis);
         }
     }
 
     // Update gamepad status message
-    function updateStatus(message) {
-        gamepadStatus.textContent = message;
-
-        // Update classes based on if we have a gamepad
-        if (Object.keys(gamepads).length > 0) {
-            gamepadStatus.classList.remove('alert-warning', 'alert-danger');
-            gamepadStatus.classList.add('alert-success');
-        } else {
-            gamepadStatus.classList.remove('alert-success', 'alert-danger');
-            gamepadStatus.classList.add('alert-warning');
-        }
+    function updateStatus(message, status) {
+        const resolvedStatus = status || (Object.keys(gamepads).length > 0 ? 'success' : 'warning');
+        gamepadStatusMessage.textContent = message;
+        gamepadStatus.classList.remove('alert-success', 'alert-warning', 'alert-danger');
+        gamepadStatus.classList.add(`alert-${resolvedStatus}`);
     }
 
     // Update the gamepad info function to include vibration status
@@ -561,7 +539,15 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // Show information about the actuator type
-        vibrationStatus.innerHTML = `<span class="badge bg-success">Supported</span> Actuator type: <span class="badge bg-secondary">${vibrationCapabilities.type}</span>`;
+        const capabilityBadge = document.createElement('span');
+        capabilityBadge.className = 'gamepad-capability-badge';
+        capabilityBadge.textContent = 'Vibration supported';
+
+        const capabilityType = document.createElement('span');
+        capabilityType.className = 'gamepad-capability-type';
+        capabilityType.textContent = vibrationCapabilities.type;
+
+        vibrationStatus.replaceChildren(capabilityBadge, capabilityType);
         vibrationButtons.classList.remove('d-none');
 
         // Show appropriate controls based on an actuator type
@@ -590,6 +576,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // Update the value display
                 buttonValueElement.textContent = value.toFixed(2);
+                buttonElement.setAttribute('aria-valuenow', value.toFixed(2));
 
                 // Calculate rotation degrees based on value (0 to 1)
                 // For a full circle: right part goes from 0 to 180 degrees, left part from 0 to 180 degrees
@@ -655,26 +642,27 @@ document.addEventListener('DOMContentLoaded', function() {
             const axisValue = gamepad.axes[i];
             const axisValueElement = document.getElementById(`axis-value-${i}`);
             const axisProgressElement = document.getElementById(`axis-progress-${i}`);
+            const axisMeterElement = document.getElementById(`axis-meter-${i}`);
 
-            if (axisValueElement && axisProgressElement) {
+            if (axisValueElement && axisProgressElement && axisMeterElement) {
                 // Display the value
                 axisValueElement.textContent = axisValue.toFixed(2);
+                axisMeterElement.setAttribute('aria-valuenow', axisValue.toFixed(2));
 
-                // Update the progress bar
-                // Convert -1 to 1 to 0 to 100 for the progress bar
-                const progressWidth = ((axisValue + 1) / 2) * 100;
+                // Fill away from the zero marker in the direction of travel.
+                const progressWidth = Math.abs(axisValue) * 50;
+                axisProgressElement.style.left = axisValue < 0 ? `${50 - progressWidth}%` : '50%';
                 axisProgressElement.style.width = `${progressWidth}%`;
 
                 // Change color based on the direction
                 if (axisValue > 0.1) {
-                    axisProgressElement.classList.remove('bg-info', 'bg-danger');
-                    axisProgressElement.classList.add('bg-success');
+                    axisProgressElement.classList.remove('is-negative');
+                    axisProgressElement.classList.add('is-positive');
                 } else if (axisValue < -0.1) {
-                    axisProgressElement.classList.remove('bg-info', 'bg-success');
-                    axisProgressElement.classList.add('bg-danger');
+                    axisProgressElement.classList.remove('is-positive');
+                    axisProgressElement.classList.add('is-negative');
                 } else {
-                    axisProgressElement.classList.remove('bg-success', 'bg-danger');
-                    axisProgressElement.classList.add('bg-info');
+                    axisProgressElement.classList.remove('is-positive', 'is-negative');
                 }
             }
         }
@@ -689,9 +677,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const rightStick = document.getElementById('right-stick-position');
 
         if (gamepad.axes.length >= 2 && leftStick) {
-            // Convert -1 to 1 values to pixel positions
-            const x = gamepad.axes[0] * 60; // Scale factor to fit within the circle
-            const y = gamepad.axes[1] * 60;
+            const range = (leftStick.parentElement.clientWidth / 2) - (leftStick.clientWidth / 2) - 2;
+            const x = gamepad.axes[0] * range;
+            const y = gamepad.axes[1] * range;
 
             // Center position is 50%, then offset by the calculated amounts
             leftStick.style.left = `calc(50% + ${x}px)`;
@@ -699,8 +687,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         if (gamepad.axes.length >= 4 && rightStick) {
-            const x = gamepad.axes[2] * 60;
-            const y = gamepad.axes[3] * 60;
+            const range = (rightStick.parentElement.clientWidth / 2) - (rightStick.clientWidth / 2) - 2;
+            const x = gamepad.axes[2] * range;
+            const y = gamepad.axes[3] * range;
 
             rightStick.style.left = `calc(50% + ${x}px)`;
             rightStick.style.top = `calc(50% + ${y}px)`;
