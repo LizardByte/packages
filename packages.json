@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-16T19:14:08.661Z",
+  "generatedAt": "2026-08-16T20:10:53.630Z",
   "repositories": [
     {
       "name": "build-deps",
@@ -1412,6 +1412,26 @@
               "name": "test_libdisplaydevice-Windows.exe",
               "size": 111978142,
               "githubUrl": "https://github.com/LizardByte/libdisplaydevice/releases/download/v2024.807.213004/test_libdisplaydevice-Windows.exe"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "libvirtualhid",
+      "archived": false,
+      "url": "https://github.com/LizardByte/libvirtualhid",
+      "releases": [
+        {
+          "tag": "v2026.816.1824.2",
+          "url": "https://github.com/LizardByte/libvirtualhid/releases/tag/v2026.816.1824.2",
+          "publishedAt": "2026-08-16T19:58:26Z",
+          "assetCount": 1,
+          "assets": [
+            {
+              "name": "libvirtualhid-Windows-AMD64-driver-installer.msi",
+              "size": 2564096,
+              "githubUrl": "https://github.com/LizardByte/libvirtualhid/releases/download/v2026.816.1824.2/libvirtualhid-Windows-AMD64-driver-installer.msi"
             }
           ]
         }
@@ -7979,8 +7999,8 @@
     }
   ],
   "stats": {
-    "totalRepositories": 10,
-    "totalReleases": 339,
-    "totalAssets": 1035
+    "totalRepositories": 11,
+    "totalReleases": 340,
+    "totalAssets": 1036
   }
 }
