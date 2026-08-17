@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-17T19:20:59.497Z",
+  "generatedAt": "2026-08-17T20:28:20.559Z",
   "repositories": [
     {
       "name": "build-deps",
@@ -1422,6 +1422,19 @@
       "archived": false,
       "url": "https://github.com/LizardByte/libvirtualhid",
       "releases": [
+        {
+          "tag": "v2026.817.1657.18",
+          "url": "https://github.com/LizardByte/libvirtualhid/releases/tag/v2026.817.1657.18",
+          "publishedAt": "2026-08-17T17:31:27Z",
+          "assetCount": 1,
+          "assets": [
+            {
+              "name": "libvirtualhid-Windows-AMD64-driver-installer.msi",
+              "size": 2560000,
+              "githubUrl": "https://github.com/LizardByte/libvirtualhid/releases/download/v2026.817.1657.18/libvirtualhid-Windows-AMD64-driver-installer.msi"
+            }
+          ]
+        },
         {
           "tag": "v2026.816.1824.2",
           "url": "https://github.com/LizardByte/libvirtualhid/releases/tag/v2026.816.1824.2",
@@ -8000,7 +8013,7 @@
   ],
   "stats": {
     "totalRepositories": 11,
-    "totalReleases": 340,
-    "totalAssets": 1036
+    "totalReleases": 341,
+    "totalAssets": 1037
   }
 }
