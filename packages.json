@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-18T03:36:30.623Z",
+  "generatedAt": "2026-08-18T03:41:36.459Z",
   "repositories": [
     {
       "name": "build-deps",
@@ -1431,7 +1431,8 @@
             {
               "name": "libvirtualhid-Windows-AMD64-driver-installer.msi",
               "size": 2560000,
-              "githubUrl": "https://github.com/LizardByte/libvirtualhid/releases/download/v2026.817.1657.18/libvirtualhid-Windows-AMD64-driver-installer.msi"
+              "githubUrl": "https://github.com/LizardByte/libvirtualhid/releases/download/v2026.817.1657.18/libvirtualhid-Windows-AMD64-driver-installer.msi",
+              "directUrl": "libvirtualhid/v2026.817.1657.18/libvirtualhid-Windows-AMD64-driver-installer.msi"
             }
           ]
         },
@@ -1444,7 +1445,8 @@
             {
               "name": "libvirtualhid-Windows-AMD64-driver-installer.msi",
               "size": 2564096,
-              "githubUrl": "https://github.com/LizardByte/libvirtualhid/releases/download/v2026.816.1824.2/libvirtualhid-Windows-AMD64-driver-installer.msi"
+              "githubUrl": "https://github.com/LizardByte/libvirtualhid/releases/download/v2026.816.1824.2/libvirtualhid-Windows-AMD64-driver-installer.msi",
+              "directUrl": "libvirtualhid/v2026.816.1824.2/libvirtualhid-Windows-AMD64-driver-installer.msi"
             }
           ]
         }
