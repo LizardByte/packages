@@ -1,6 +1,11 @@
 {
   "defaultInclude": false,
   "repositories": {
+    "libvirtualhid": {
+      "includeAssets": [
+        "*.msi"
+      ]
+    },
     "Sunshine": {
       "includeAssets": [
         "*-installer.exe",
