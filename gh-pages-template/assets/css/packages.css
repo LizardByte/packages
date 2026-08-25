@@ -39,7 +39,7 @@
 
 .asset-name {
     min-width: 16rem;
-    word-break: break-word;
+    overflow-wrap: anywhere;
 }
 
 .asset-actions {
