@@ -653,5 +653,5 @@ class LizardByteAssetsApp {
 // Initialize the application when the DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     const app = new LizardByteAssetsApp();
-    app.init();
+    app.init().catch(error => console.error('Failed to start application:', error));
 });

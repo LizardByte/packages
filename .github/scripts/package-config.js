@@ -1,5 +1,5 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 
 const CONFIG_FILENAME = 'packages.config.json';
 
@@ -72,7 +72,7 @@ function loadPackageConfig(startDir = process.cwd()) {
  * @returns {string} Regex-escaped segment.
  */
 function escapeRegex(value) {
-  return value.replace(/[|\\{}()[\]^$+?.]/g, '\\$&');
+  return value.replace(/[|\\{}()[\]^$+?.]/g, String.raw`\$&`);
 }
 
 /**

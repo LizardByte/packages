@@ -2,8 +2,8 @@
  * File System Utilities
  * Handles directory creation and file operations
  */
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 
 /**
  * Ensure directory exists, create if it doesn't

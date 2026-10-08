@@ -2,7 +2,7 @@
  * Hash Generation Utilities
  * Handles generating hash files for downloaded assets
  */
-const crypto = require('crypto');
+const crypto = require('node:crypto');
 const { readFile, writeFile } = require('./file-utils');
 
 /**

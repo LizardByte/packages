@@ -2,8 +2,8 @@
  * Asset Synchronization Script
  * Main script for downloading and organizing release assets
  */
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 const { ensureDir, fileExists } = require('./file-utils');
 const { generateHashFiles } = require('./hash-utils');
 const { downloadAssetWithRetry } = require('./download-utils');
@@ -116,44 +116,7 @@ function cleanupStoredAssets(distPath, packageConfig) {
     }
 
     const repoPath = path.join(distPath, repoDir.name);
-    const repoContents = fs.readdirSync(repoPath, { withFileTypes: true });
-
-    for (const releaseDir of repoContents) {
-      if (!releaseDir.isDirectory() || !releaseDir.name.startsWith('v')) {
-        continue;
-      }
-
-      const releasePath = path.join(repoPath, releaseDir.name);
-      const releaseContents = fs.readdirSync(releasePath, { withFileTypes: true });
-
-      for (const assetFile of releaseContents) {
-        if (!assetFile.isFile() || isHashFile(assetFile.name)) {
-          continue;
-        }
-
-        if (!shouldIncludeAsset(packageConfig, repoDir.name, assetFile.name)) {
-          removeAsset(path.join(releasePath, assetFile.name));
-        }
-      }
-
-      for (const hashFile of fs.readdirSync(releasePath, { withFileTypes: true })) {
-        if (!hashFile.isFile() || !isHashFile(hashFile.name)) {
-          continue;
-        }
-
-        const assetName = hashFile.name.replace(/\.(sha256|sha512|md5)$/, '');
-        if (!fileExists(path.join(releasePath, assetName))) {
-          const hashPath = path.join(releasePath, hashFile.name);
-          fs.unlinkSync(hashPath);
-          console.log(`Removed orphan hash file: ${hashPath}`);
-        }
-      }
-
-      if (!hasAssetFiles(releasePath)) {
-        fs.rmSync(releasePath, { recursive: true, force: true });
-        console.log(`Removed empty release directory: ${releasePath}`);
-      }
-    }
+    cleanupRepositoryAssets(repoPath, repoDir.name, packageConfig);
 
     if (fs.readdirSync(repoPath).length === 0) {
       fs.rmSync(repoPath, { recursive: true, force: true });
@@ -165,20 +128,76 @@ function cleanupStoredAssets(distPath, packageConfig) {
 }
 
 /**
+ * Remove excluded assets from each v-prefixed release in a repository.
+ * @param {string} repoPath - Repository directory path.
+ * @param {string} repoName - Repository name used by the package config.
+ * @param {Object} packageConfig - Loaded package config.
+ */
+function cleanupRepositoryAssets(repoPath, repoName, packageConfig) {
+  const repoContents = fs.readdirSync(repoPath, { withFileTypes: true });
+
+  for (const releaseDir of repoContents) {
+    if (releaseDir.isDirectory() && releaseDir.name.startsWith('v')) {
+      cleanupReleaseAssets(path.join(repoPath, releaseDir.name), repoName, packageConfig);
+    }
+  }
+}
+
+/**
+ * Remove excluded assets, orphan hashes, and an empty release directory.
+ * @param {string} releasePath - Release directory path.
+ * @param {string} repoName - Repository name used by the package config.
+ * @param {Object} packageConfig - Loaded package config.
+ */
+function cleanupReleaseAssets(releasePath, repoName, packageConfig) {
+  const releaseContents = fs.readdirSync(releasePath, { withFileTypes: true });
+
+  for (const assetFile of releaseContents) {
+    if (assetFile.isFile() && !isHashFile(assetFile.name) &&
+        !shouldIncludeAsset(packageConfig, repoName, assetFile.name)) {
+      removeAsset(path.join(releasePath, assetFile.name));
+    }
+  }
+
+  removeOrphanHashFiles(releasePath);
+
+  if (!hasAssetFiles(releasePath)) {
+    fs.rmSync(releasePath, { recursive: true, force: true });
+    console.log(`Removed empty release directory: ${releasePath}`);
+  }
+}
+
+/**
+ * Remove generated hashes whose primary asset no longer exists.
+ * @param {string} releasePath - Release directory path.
+ */
+function removeOrphanHashFiles(releasePath) {
+  for (const hashFile of fs.readdirSync(releasePath, { withFileTypes: true })) {
+    if (!hashFile.isFile() || !isHashFile(hashFile.name)) {
+      continue;
+    }
+
+    const assetName = hashFile.name.replace(/\.(sha256|sha512|md5)$/, '');
+    if (!fileExists(path.join(releasePath, assetName))) {
+      const hashPath = path.join(releasePath, hashFile.name);
+      fs.unlinkSync(hashPath);
+      console.log(`Removed orphan hash file: ${hashPath}`);
+    }
+  }
+}
+
+/**
  * Process a single repository, collecting all release metadata while downloading only configured assets.
  * @param {Object} github - GitHub API client.
  * @param {Object} context - GitHub Actions context.
  * @param {Object} repo - Repository API response object.
  * @param {Array} repositoryData - Accumulated package metadata.
  * @param {number} totalAssets - Current total release asset count.
- * @param {Object} packageConfig - Loaded package config.
- * @param {boolean} isPullRequest - Whether this is a pull request run.
- * @param {number|null} releaseLimit - Optional release limit for pull request runs.
- * @param {number} maxNewAssets - Maximum new assets to download.
- * @param {number} newAssetsDownloaded - Number of new assets already downloaded.
+ * @param {Object} options - Package config, release limits, and download counters for this run.
  * @returns {Promise<{totalAssets: number, processedReleases: number, newAssetsDownloaded: number}>}
  */
-async function processRepository(github, context, repo, repositoryData, totalAssets, packageConfig, isPullRequest = false, releaseLimit = null, maxNewAssets = 0, newAssetsDownloaded = 0) {
+async function processRepository(github, context, repo, repositoryData, totalAssets, options) {
+  const { packageConfig, isPullRequest = false, releaseLimit = null, maxNewAssets = 0, newAssetsDownloaded = 0 } = options;
   console.log(`Processing repository: ${repo.name}`);
 
   let processedReleasesWithAssets = 0;
@@ -218,7 +237,9 @@ async function processRepository(github, context, repo, repositoryData, totalAss
         break;
       }
 
-      const result = await processRelease(repo.name, release, packageConfig, maxNewAssets, newAssetsDownloaded + repoNewAssets);
+      const result = await processRelease( // NOSONAR javascript:S9382: Releases share the PR count and download budget.
+        repo.name, release, packageConfig, maxNewAssets, newAssetsDownloaded + repoNewAssets
+      );
       const assetCount = result.assetCount;
       const newAssets = result.newAssets;
 
@@ -283,7 +304,7 @@ async function processRelease(repoName, release, packageConfig, maxNewAssets = 0
         break;
       }
 
-      const result = await processAsset(releaseDir, asset);
+      const result = await processAsset(releaseDir, asset); // NOSONAR javascript:S9382: Each download updates the remaining asset budget.
       if (result.downloaded && result.isNew) {
         newAssets++;
       }
@@ -295,6 +316,21 @@ async function processRelease(repoName, release, packageConfig, maxNewAssets = 0
     .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }));
 
   return { assetCount, newAssets, assets };
+}
+
+/**
+ * Remove a stored asset and its hashes when the release asset exceeds the size limit.
+ * @param {string} assetPath - Path to the primary asset file.
+ */
+function removeOversizedAsset(assetPath) {
+  if (fileExists(assetPath)) {
+    console.log(`Removing existing oversized file: ${assetPath}`);
+    try {
+      removeAsset(assetPath);
+    } catch (error) {
+      console.error(`Failed to remove oversized file ${assetPath}: ${error.message}`);
+    }
+  }
 }
 
 /**
@@ -313,14 +349,7 @@ async function processAsset(releaseDir, asset) {
     console.log(`Skipping ${asset.name} (${sizeMB}MB) - exceeds 50MB limit`);
 
     // If the file already exists and is over the size limit, remove it
-    if (fileExists(assetPath)) {
-      console.log(`Removing existing oversized file: ${assetPath}`);
-      try {
-        removeAsset(assetPath);
-      } catch (error) {
-        console.error(`Failed to remove oversized file ${assetPath}: ${error.message}`);
-      }
-    }
+    removeOversizedAsset(assetPath);
 
     return { downloaded: false, isNew: false };
   }
@@ -416,17 +445,19 @@ async function syncReleaseAssets(github, context, isPullRequest = false, maxNewA
 
   // Process each repository
   for (const repo of repos) {
-    const result = await processRepository(
+    const result = await processRepository( // NOSONAR javascript:S9382: Repositories share the run's download budget.
       github,
       context,
       repo,
       repositoryData,
       totalAssets,
-      packageConfig,
-      isPullRequest,
-      isPullRequest ? 2 : null,
-      maxNewAssets,
-      newAssetsDownloaded
+      {
+        packageConfig,
+        isPullRequest,
+        releaseLimit: isPullRequest ? 2 : null,
+        maxNewAssets,
+        newAssetsDownloaded
+      }
     );
     totalAssets = result.totalAssets;
     totalProcessedReleases += result.processedReleases;
