@@ -37,7 +37,7 @@ async function downloadAssetWithRetry(url, filePath, token, maxRetries = 3) {
         throw error;
       }
       // Wait before retry (exponential backoff)
-      await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, attempt - 1)));
+      await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, attempt - 1))); // NOSONAR javascript:S9382: Retry backoff must finish before the next attempt.
     }
   }
   return false;

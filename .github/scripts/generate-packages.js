@@ -1,5 +1,5 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 
 /**
  * Encode path segments for a browser URL without changing the dist directory layout.
@@ -58,7 +58,7 @@ function normalizeRepositoryMetadata(repositoryMetadata = []) {
                 .map(release => {
                     const assets = Array.isArray(release.assets)
                         ? release.assets
-                            .filter(asset => asset && asset.name)
+                            .filter(asset => asset?.name)
                             .map(asset => ({
                                 name: asset.name,
                                 size: asset.size,

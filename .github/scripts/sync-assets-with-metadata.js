@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('node:fs');
 const { syncReleaseAssets } = require('./sync-assets.js');
 const { buildPackagesData, writePackagesJson } = require('./generate-packages.js');
 
