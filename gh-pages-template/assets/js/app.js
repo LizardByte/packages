@@ -50,6 +50,15 @@ function buildReleaseHash(repoName, releaseTag) {
 }
 
 /**
+ * Keep release routes and card state distinct across organizations and transfers.
+ * @param {Object} repo - Package index repository record.
+ * @returns {string} Stable repository key.
+ */
+function repositoryKey(repo) {
+    return String(repo.id || repo.fullName || repo.name);
+}
+
+/**
  * Parse the current hash into a release route, when one is active.
  * @returns {{repoName: string, releaseTag: string}|null} Parsed route or null for the package list.
  */
@@ -189,7 +198,9 @@ class RepositoryDataManager {
      * Find a release by repository name and tag.
      */
     findRelease(repoName, releaseTag) {
-        const repo = this.repositoryData.find(candidate => candidate.name === repoName);
+        const namedMatches = this.repositoryData.filter(candidate => candidate.name === repoName);
+        const repo = this.repositoryData.find(candidate => repositoryKey(candidate) === repoName) ||
+            (namedMatches.length === 1 ? namedMatches[0] : null);
         if (!repo) {
             return null;
         }
@@ -221,7 +232,7 @@ class RepositoryDataManager {
         const normalizedSearch = searchTerm.toLowerCase();
 
         return filteredRepos.filter(repo => {
-            const repoMatch = repo.name.toLowerCase().includes(normalizedSearch);
+            const repoMatch = (repo.fullName || repo.name).toLowerCase().includes(normalizedSearch);
             const releaseMatch = repo.releases?.some(release => {
                 const tagMatch = release.tag.toLowerCase().includes(normalizedSearch);
                 const assetMatch = release.assets?.some(asset => {
@@ -253,7 +264,6 @@ class UIManager {
             document.getElementById('archiveControls'),
             document.getElementById('statsGrid')
         ].filter(Boolean);
-        this.orgName = 'LizardByte';
         this.lastUpdated = null; // Store lastUpdated from packages.json
         this.expandedRepositories = new Set();
         this.currentRepos = [];
@@ -292,7 +302,8 @@ class UIManager {
 
         this.repositoryGrid.innerHTML = repos.map(repo => {
             const releases = Array.isArray(repo.releases) ? repo.releases : [];
-            const isExpanded = this.expandedRepositories.has(repo.name);
+            const key = repositoryKey(repo);
+            const isExpanded = this.expandedRepositories.has(key);
             // Show only the latest 5 releases unless the repository card is expanded.
             const displayReleases = isExpanded ? releases : releases.slice(0, 5);
             const hasMoreReleases = releases.length > 5;
@@ -303,7 +314,7 @@ class UIManager {
             const releaseItemsHtml = displayReleases.length > 0
                 ? displayReleases.map(release => `
                     <li class="list-group-item d-flex justify-content-between align-items-center px-0 gap-3">
-                        <a href="${escapeAttribute(buildReleaseHash(repo.name, release.tag))}"
+                        <a href="${escapeAttribute(buildReleaseHash(key, release.tag))}"
                            class="text-decoration-none fw-medium">
                             ${escapeHtml(release.tag)}
                         </a>
@@ -317,7 +328,7 @@ class UIManager {
                     <li class="list-group-item px-0 text-center">
                         <button type="button"
                                 class="btn btn-outline-primary btn-sm js-toggle-releases"
-                                data-repo="${escapeAttribute(repo.name)}">
+                                data-repo="${escapeAttribute(key)}">
                             ${toggleButtonText}
                         </button>
                     </li>
@@ -325,11 +336,11 @@ class UIManager {
                 : '';
 
             return `
-                <div class="col-lg-4 col-md-6 mb-4" data-repo="${escapeAttribute(repo.name.toLowerCase())}" ${repo.archived ? 'data-archived="true"' : ''}>
+                <div class="col-lg-4 col-md-6 mb-4" data-repo="${escapeAttribute(key)}" ${repo.archived ? 'data-archived="true"' : ''}>
                     <div class="card h-100 shadow border-0 rounded-0">
                         <div class="card-body p-4 rounded-0">
                             <h5 class="card-title text-info mb-3">
-                                ${escapeHtml(repo.name)}
+                                ${escapeHtml(repo.fullName || repo.name)}
                                 ${repo.archived ? '<span class="badge bg-warning text-dark ms-2">Archived</span>' : ''}
                             </h5>
                             <ul class="list-group list-group-flush">
@@ -370,14 +381,16 @@ class UIManager {
         this.setHomeControlsVisible(false);
 
         const assets = Array.isArray(release.assets) ? release.assets : [];
-        const releaseUrl = release.url || `https://github.com/${this.orgName}/${encodeURIComponent(repo.name)}/releases/tag/${encodeURIComponent(release.tag)}`;
+        const fullName = repo.fullName || `LizardByte/${repo.name}`;
+        const repositoryUrl = repo.url || `https://github.com/${fullName}`;
+        const releaseUrl = release.url || `${repositoryUrl}/releases/tag/${encodeURIComponent(release.tag)}`;
         const publishedAt = release.publishedAt ? this.formatUpdateTime(release.publishedAt) : null;
         const mirroredCount = assets.filter(asset => asset.directUrl).length;
         const assetCount = this.getReleaseAssetCount(release);
         const assetLabel = assetCount === 1 ? 'asset' : 'assets';
         const assetRows = assets.map(asset => this.renderAssetRow(asset)).join('');
 
-        document.title = `${repo.name} ${release.tag} - ${DEFAULT_PAGE_TITLE}`;
+        document.title = `${repo.fullName || repo.name} ${release.tag} - ${DEFAULT_PAGE_TITLE}`;
 
         this.repositoryGrid.innerHTML = `
             <div class="col-12 release-detail">
@@ -390,7 +403,7 @@ class UIManager {
 
                 <div class="release-heading mb-4">
                     <h2 class="h3 mb-2">
-                        ${escapeHtml(repo.name)} ${escapeHtml(release.tag)}
+                        ${escapeHtml(repo.fullName || repo.name)} ${escapeHtml(release.tag)}
                         ${repo.archived ? '<span class="badge bg-warning text-dark ms-2 align-middle">Archived</span>' : ''}
                     </h2>
                     <div class="text-muted small">

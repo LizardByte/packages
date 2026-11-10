@@ -7,7 +7,8 @@ const path = require('node:path');
 const { ensureDir, fileExists } = require('./file-utils');
 const { generateHashFiles } = require('./hash-utils');
 const { downloadAssetWithRetry } = require('./download-utils');
-const { loadPackageConfig, shouldIncludeAsset } = require('./package-config');
+const { loadPackageConfig, shouldIncludeAsset, getRepositoryDirectory } = require('./package-config');
+const { discoverRepositories } = require('./repository-catalog');
 const { cleanupNonVPrefixedReleases } = require('./cleanup-releases');
 
 /**
@@ -80,7 +81,7 @@ function encodeDirectAssetUrl(...segments) {
 
 /**
  * Build public metadata for a GitHub release asset.
- * @param {string} repoName - Repository name.
+ * @param {string} repoName - Storage directory name.
  * @param {string} releaseTag - Release tag.
  * @param {Object} asset - GitHub release asset API response object.
  * @returns {Object} Package index asset metadata.
@@ -104,8 +105,9 @@ function buildAssetMetadata(repoName, releaseTag, asset) {
  * This only affects mirrored files; release metadata is still generated from GitHub.
  * @param {string} distPath - Path to the dist checkout.
  * @param {Object} packageConfig - Loaded package config.
+ * @param {Array} repositories - Repositories with resolved storage directories.
  */
-function cleanupStoredAssets(distPath, packageConfig) {
+function cleanupStoredAssets(distPath, packageConfig, repositories) {
   console.log('Cleaning up stored assets excluded by package config...');
 
   const distContents = fs.readdirSync(distPath, { withFileTypes: true });
@@ -116,7 +118,8 @@ function cleanupStoredAssets(distPath, packageConfig) {
     }
 
     const repoPath = path.join(distPath, repoDir.name);
-    cleanupRepositoryAssets(repoPath, repoDir.name, packageConfig);
+    const repository = repositories.find(repo => repo.directory === repoDir.name);
+    cleanupRepositoryAssets(repoPath, repository || repoDir.name, packageConfig);
 
     if (fs.readdirSync(repoPath).length === 0) {
       fs.rmSync(repoPath, { recursive: true, force: true });
@@ -130,7 +133,7 @@ function cleanupStoredAssets(distPath, packageConfig) {
 /**
  * Remove excluded assets from each v-prefixed release in a repository.
  * @param {string} repoPath - Repository directory path.
- * @param {string} repoName - Repository name used by the package config.
+ * @param {Object|string} repoName - Repository record or configured directory.
  * @param {Object} packageConfig - Loaded package config.
  */
 function cleanupRepositoryAssets(repoPath, repoName, packageConfig) {
@@ -146,7 +149,7 @@ function cleanupRepositoryAssets(repoPath, repoName, packageConfig) {
 /**
  * Remove excluded assets, orphan hashes, and an empty release directory.
  * @param {string} releasePath - Release directory path.
- * @param {string} repoName - Repository name used by the package config.
+ * @param {Object|string} repoName - Repository record or configured directory.
  * @param {Object} packageConfig - Loaded package config.
  */
 function cleanupReleaseAssets(releasePath, repoName, packageConfig) {
@@ -189,16 +192,15 @@ function removeOrphanHashFiles(releasePath) {
 /**
  * Process a single repository, collecting all release metadata while downloading only configured assets.
  * @param {Object} github - GitHub API client.
- * @param {Object} context - GitHub Actions context.
  * @param {Object} repo - Repository API response object.
  * @param {Array} repositoryData - Accumulated package metadata.
  * @param {number} totalAssets - Current total release asset count.
  * @param {Object} options - Package config, release limits, and download counters for this run.
  * @returns {Promise<{totalAssets: number, processedReleases: number, newAssetsDownloaded: number}>}
  */
-async function processRepository(github, context, repo, repositoryData, totalAssets, options) {
+async function processRepository(github, repo, repositoryData, totalAssets, options) {
   const { packageConfig, isPullRequest = false, releaseLimit = null, maxNewAssets = 0, newAssetsDownloaded = 0 } = options;
-  console.log(`Processing repository: ${repo.name}`);
+  console.log(`Processing repository: ${repo.full_name}`);
 
   let processedReleasesWithAssets = 0;
   let repoNewAssets = 0;
@@ -206,7 +208,7 @@ async function processRepository(github, context, repo, repositoryData, totalAss
   try {
     // Get releases for the repository with pagination
     const releases = await github.paginate(github.rest.repos.listReleases, {
-      owner: context.repo.owner,
+      owner: repo.owner.login,
       repo: repo.name,
       per_page: 100
     });
@@ -224,6 +226,9 @@ async function processRepository(github, context, repo, repositoryData, totalAss
     }
 
     const repoData = {
+      id: repo.id,
+      fullName: repo.full_name,
+      directory: repo.directory,
       name: repo.name,
       archived: repo.archived,
       url: repo.html_url,
@@ -238,7 +243,7 @@ async function processRepository(github, context, repo, repositoryData, totalAss
       }
 
       const result = await processRelease( // NOSONAR javascript:S9382: Releases share the PR count and download budget.
-        repo.name, release, packageConfig, maxNewAssets, newAssetsDownloaded + repoNewAssets
+        repo, release, packageConfig, maxNewAssets, newAssetsDownloaded + repoNewAssets
       );
       const assetCount = result.assetCount;
       const newAssets = result.newAssets;
@@ -271,14 +276,14 @@ async function processRepository(github, context, repo, repositoryData, totalAss
 
 /**
  * Process a single release, counting all release assets while downloading only configured assets.
- * @param {string} repoName - Repository name.
+ * @param {Object} repo - Repository with a resolved storage directory.
  * @param {Object} release - GitHub release API response object.
  * @param {Object} packageConfig - Loaded package config.
  * @param {number} maxNewAssets - Maximum new assets to download.
  * @param {number} currentNewAssets - Number of new assets already downloaded.
  * @returns {Promise<{assetCount: number, newAssets: number, assets: Array}>}
  */
-async function processRelease(repoName, release, packageConfig, maxNewAssets = 0, currentNewAssets = 0) {
+async function processRelease(repo, release, packageConfig, maxNewAssets = 0, currentNewAssets = 0) {
   console.log(`Processing release: ${release.tag_name}`);
 
   if (release.assets.length === 0) {
@@ -287,14 +292,14 @@ async function processRelease(repoName, release, packageConfig, maxNewAssets = 0
   }
 
   const assetCount = release.assets.length;
-  const includedAssets = release.assets.filter(asset => shouldIncludeAsset(packageConfig, repoName, asset.name));
+  const includedAssets = release.assets.filter(asset => shouldIncludeAsset(packageConfig, repo, asset.name));
   let newAssets = 0;
 
   if (includedAssets.length === 0) {
     console.log(`No configured assets found for release ${release.tag_name}`);
   } else {
     // Create directory structure
-    const releaseDir = path.join(repoName, release.tag_name);
+    const releaseDir = path.join(repo.directory, release.tag_name);
     ensureDir(releaseDir);
 
     for (const asset of includedAssets) {
@@ -312,7 +317,7 @@ async function processRelease(repoName, release, packageConfig, maxNewAssets = 0
   }
 
   const assets = release.assets
-    .map(asset => buildAssetMetadata(repoName, release.tag_name, asset))
+    .map(asset => buildAssetMetadata(repo.directory, release.tag_name, asset))
     .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }));
 
   return { assetCount, newAssets, assets };
@@ -413,7 +418,7 @@ async function processAsset(releaseDir, asset) {
  * @returns {Promise<Array>} Repository metadata for packages.json.
  */
 async function syncReleaseAssets(github, context, isPullRequest = false, maxNewAssets = 0) {
-  console.log('Getting repositories from organization...');
+  console.log('Getting repositories from the shared organization registry...');
 
   if (isPullRequest) {
     console.log('Running in pull request mode - limiting to 2 releases with assets per repository');
@@ -425,18 +430,21 @@ async function syncReleaseAssets(github, context, isPullRequest = false, maxNewA
     console.log('Asset download limit: unlimited');
   }
 
-  // Get all repositories with pagination
-  const repos = await github.paginate(github.rest.repos.listForOrg, {
-    org: context.repo.owner,
-    type: 'all',
-    per_page: 100
-  });
+  // Finish discovery and directory validation before changing the dist checkout.
+  const repos = await discoverRepositories(github);
 
   console.log(`Found ${repos.length} repositories`);
 
   const packageConfig = loadPackageConfig(process.cwd());
+  const directories = new Set();
+  for (const repo of repos) {
+    repo.directory = getRepositoryDirectory(packageConfig, repo);
+    const key = repo.directory.toLowerCase();
+    if (directories.has(key)) throw new Error(`Duplicate package directory: ${repo.directory}`);
+    directories.add(key);
+  }
   cleanupNonVPrefixedReleases('.');
-  cleanupStoredAssets('.', packageConfig);
+  cleanupStoredAssets('.', packageConfig, repos);
 
   const repositoryData = [];
   let totalAssets = 0;
@@ -447,7 +455,6 @@ async function syncReleaseAssets(github, context, isPullRequest = false, maxNewA
   for (const repo of repos) {
     const result = await processRepository( // NOSONAR javascript:S9382: Repositories share the run's download budget.
       github,
-      context,
       repo,
       repositoryData,
       totalAssets,

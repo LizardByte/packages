@@ -15,7 +15,8 @@
 ## Overview
 
 This repository serves as a centralized package index and filtered release asset mirror for repositories within the
-LizardByte organization. Release metadata is published to GitHub Pages, while configured assets are also downloaded and
+organizations in the shared [organization registry](https://github.com/LizardByte/.github/blob/master/organizations.json).
+Release metadata is published to GitHub Pages, while configured assets are also downloaded and
 organized in the `dist` branch for direct access and distribution.
 
 ## Structure
@@ -42,7 +43,7 @@ dist/
 
 - **Automated Collection**: GitHub Actions workflow automatically downloads release assets from all org repos
 - **Hash Validation**: Each asset includes SHA256, SHA512, and MD5 hash files for integrity verification
-- **Organized Structure**: Assets are organized by repository name and release tag
+- **Organized Structure**: Existing download directories are preserved; new mirrors use stable repository IDs
 - **Incremental Updates**: Only new assets are downloaded to avoid duplication
 - **Scheduled Updates**: Runs every hour to keep assets up-to-date
 
@@ -51,8 +52,8 @@ dist/
 The release asset collection and GitHub Pages deployment are handled by the `update-pages.yml` workflow. Asset
 retention is controlled by `packages.config.json`.
 
-1. Discovers all repositories in the LizardByte organization
-2. Fetches release information for each repository
+1. Discovers public repositories in every registered organization, deduplicating GitHub repository IDs
+2. Fetches release information from each repository's current owner
 3. Downloads configured release assets
 4. Removes previously stored assets that are no longer configured
 5. Generates hash files for integrity verification
@@ -71,7 +72,9 @@ opt in with asset patterns for files that should be mirrored.
 {
   "defaultInclude": false,
   "repositories": {
-    "Sunshine": {
+    "LizardByte/Sunshine": {
+      "repositoryId": 438803890,
+      "directory": "Sunshine",
       "includeAssets": [
         "*-installer.exe",
         "*-installer.msi"
@@ -81,11 +84,22 @@ opt in with asset patterns for files that should be mirrored.
 }
 ```
 
+Repository keys are qualified `owner/repository` names. An optional `repositoryId` keeps the policy attached to the
+same repository after a transfer or rename; update its qualified key when convenient. A matching name with a different
+ID does not inherit that policy. Keep `directory` unchanged to preserve public download URLs. The existing Sunshine
+and libvirtualhid directories remain unchanged; other repositories default to their numeric GitHub ID, so repositories
+with the same name have separate storage. Custom directories must be distinct single directory names.
+
+The package index records each repository's ID and current full name. Release-page routes use the stable ID; existing
+name-based release links continue to work when the name is unambiguous. Search also matches organization names.
+
+Run the synchronization and browser-logic regression tests with `node --test .github/scripts/*.test.js`.
+
 ## Usage
 
 Configured release assets are available in the `dist` branch of this repository. You can:
 
 - Browse the GitHub Pages package index for per-release asset links
 - Use GitHub Releases URLs for every release asset
-- Use GitHub Pages direct URLs for mirrored assets, e.g. `/packages/<repo>/<tag>/<asset>`
+- Use GitHub Pages direct URLs for mirrored assets, e.g. `/packages/<directory>/<tag>/<asset>`
 - Use the hash files beside mirrored assets to verify asset integrity
