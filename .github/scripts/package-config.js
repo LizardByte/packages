@@ -102,12 +102,12 @@ function matchesPattern(value, patterns) {
 /**
  * Determine whether a release asset should be mirrored into dist and GitHub Pages.
  * @param {{defaultInclude: boolean, repositories: Object}} config - Package config.
- * @param {string} repoName - Repository name.
+ * @param {Object|string} repository - GitHub repository record or configured directory.
  * @param {string} assetName - Release asset filename.
  * @returns {boolean} True when the asset should be downloaded and retained.
  */
-function shouldIncludeAsset(config, repoName, assetName) {
-  const repoConfig = config.repositories[repoName];
+function shouldIncludeAsset(config, repository, assetName) {
+  const repoConfig = getRepositoryConfig(config, repository);
   if (!repoConfig) {
     return config.defaultInclude;
   }
@@ -124,7 +124,42 @@ function shouldIncludeAsset(config, repoName, assetName) {
   return matchesPattern(assetName, includeAssets);
 }
 
+/**
+ * Find a repository's retention policy, including after an organization transfer.
+ * @param {Object} config - Loaded package config.
+ * @param {Object|string} repository - GitHub repository record or qualified name.
+ * @returns {Object|undefined} Matching retention policy.
+ */
+function getRepositoryConfig(config, repository) {
+  if (typeof repository === 'string') {
+    return config.repositories[repository] || Object.values(config.repositories)
+      .find(entry => entry.directory === repository);
+  }
+  const named = config.repositories[repository.full_name];
+  if (named && (!named.repositoryId || named.repositoryId === repository.id)) return named;
+  return Object.values(config.repositories).find(entry => entry.repositoryId === repository.id);
+}
+
+/**
+ * Use an explicit legacy directory or a transfer-stable GitHub repository ID.
+ * @param {Object} config - Loaded package config.
+ * @param {Object} repository - GitHub repository record.
+ * @returns {string} Single directory name within dist.
+ */
+function getRepositoryDirectory(config, repository) {
+  if (!Number.isSafeInteger(repository.id) || repository.id <= 0) {
+    throw new Error(`Invalid GitHub repository ID for ${repository.full_name}`);
+  }
+  const directory = getRepositoryConfig(config, repository)?.directory ?? String(repository.id);
+  if (typeof directory !== 'string' || !/^[a-zA-Z0-9][a-zA-Z0-9_.-]*$/.test(directory)) {
+    throw new Error(`Invalid package directory for ${repository.full_name}`);
+  }
+  return directory;
+}
+
 module.exports = {
+  getRepositoryConfig,
+  getRepositoryDirectory,
   loadPackageConfig,
   shouldIncludeAsset
 };

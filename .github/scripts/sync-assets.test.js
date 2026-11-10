@@ -14,6 +14,10 @@ function createFixture(t, config = { defaultInclude: true, repositories: {} }) {
   const fixturePath = fs.mkdtempSync(path.join(tempRoot, 'packages-sonar-'));
   const distPath = path.join(fixturePath, 'dist');
   fs.mkdirSync(distPath);
+  const defaults = { includeAll: config.defaultInclude };
+  config.repositories = Object.fromEntries(Object.entries({ Alpha: defaults, Beta: defaults, ...config.repositories })
+    .map(([name, entry]) => [name.includes('/') ? name : `Example/${name}`,
+      { directory: name.split('/').at(-1), ...entry }]));
   fs.writeFileSync(path.join(fixturePath, 'packages.config.json'), JSON.stringify(config));
   process.chdir(distPath);
   t.mock.method(console, 'log', () => {});
@@ -39,10 +43,12 @@ function createGithub(releasesByRepo) {
   const listForOrg = () => {};
   const listReleases = () => {};
   return {
-    rest: { repos: { listForOrg, listReleases } },
+    rest: { repos: { listForOrg, listReleases,
+      getContent: async () => ({ data: { content: Buffer.from('["Example"]').toString('base64') } }) } },
     async paginate(method, params) {
       if (method === listForOrg) {
-        return Object.keys(releasesByRepo).map(name => ({
+        return Object.keys(releasesByRepo).map((name, index) => ({
+          id: index + 1, full_name: `Example/${name}`, owner: { login: 'Example' },
           name, archived: false, html_url: `https://example.com/${name}`
         }));
       }
@@ -64,6 +70,34 @@ function createRelease(tag, assets = []) {
       size: 5, browser_download_url: `https://example.com/assets/${asset.name}`, ...asset
     }))
   };
+}
+
+function createMultiOrgGithub(organizations, repositories, releases) {
+  const calls = [];
+  const listForOrg = () => {};
+  const listReleases = () => {};
+  return {
+    calls,
+    rest: { repos: { listForOrg, listReleases,
+      getContent: async params => {
+        calls.push(params);
+        return { data: { content: Buffer.from(JSON.stringify(organizations)).toString('base64') } };
+      } } },
+    async paginate(method, params) {
+      calls.push(params);
+      if (method === listForOrg) {
+        const result = repositories[params.org];
+        if (result instanceof Error) throw result;
+        return result;
+      }
+      return releases[`${params.owner}/${params.repo}`] || [];
+    }
+  };
+}
+
+function repository(id, owner, name) {
+  return { id, name, full_name: `${owner}/${name}`, owner: { login: owner },
+    private: false, archived: false, html_url: `https://github.com/${owner}/${name}` };
 }
 
 function mockDownloads(t) {
@@ -233,4 +267,81 @@ test('oversized removal failures are contained and subsequent assets are downloa
   assert.equal(downloads.length, 1);
   assert.ok(fs.existsSync('Alpha/v1/huge.zip'));
   assert.ok(fs.existsSync('Alpha/v1/small.zip'));
+});
+
+test('registry discovery uses canonical release owners and isolates same-name repositories by ID', async t => {
+  createFixture(t);
+  const downloads = mockDownloads(t);
+  const alpha = repository(101, 'First', 'Shared');
+  const beta = repository(202, 'Second', 'Shared');
+  const github = createMultiOrgGithub(['First', 'Second', 'First'], {
+    First: [alpha], Second: [alpha, beta, { ...repository(303, 'Second', 'Private'), private: true }]
+  }, {
+    'First/Shared': [createRelease('v1', [{ name: 'same.zip' }])],
+    'Second/Shared': [createRelease('v1', [{ name: 'same.zip' }])]
+  });
+
+  const data = await syncReleaseAssets(github, context);
+
+  assert.deepEqual(data.map(repo => repo.fullName), ['First/Shared', 'Second/Shared']);
+  assert.deepEqual(data.map(repo => repo.releases[0].assets[0].directUrl),
+    ['101/v1/same.zip', '202/v1/same.zip']);
+  assert.equal(downloads.length, 2);
+  assert.deepEqual(github.calls.filter(call => call.org).map(call => call.org), ['First', 'Second']);
+  assert.deepEqual(github.calls.filter(call => call.owner && call.repo === 'Shared').map(call => call.owner),
+    ['First', 'Second']);
+});
+
+test('a transferred repository retains its policy, stored asset bytes, hashes, and public directory', async t => {
+  const write = createFixture(t, { defaultInclude: false, repositories: {
+    'OldOrg/Sunshine': { repositoryId: 438803890, directory: 'Sunshine', includeAssets: ['*.exe'] }
+  } });
+  write('Sunshine/v1/installer.exe', 'existing installer');
+  write('Sunshine/v1/installer.exe.sha256', 'existing hash');
+  const downloads = mockDownloads(t);
+  const github = createMultiOrgGithub(['SunshineStream'], {
+    SunshineStream: [repository(438803890, 'SunshineStream', 'Sunshine')]
+  }, { 'SunshineStream/Sunshine': [createRelease('v1', [{ name: 'installer.exe' }])] });
+
+  const data = await syncReleaseAssets(github, context);
+
+  assert.equal(downloads.length, 0);
+  assert.equal(fs.readFileSync('Sunshine/v1/installer.exe', 'utf8'), 'existing installer');
+  assert.equal(fs.readFileSync('Sunshine/v1/installer.exe.sha256', 'utf8'), 'existing hash');
+  assert.equal(data[0].releases[0].assets[0].directUrl, 'Sunshine/v1/installer.exe');
+  assert.equal(data[0].fullName, 'SunshineStream/Sunshine');
+  const { getRepositoryConfig } = require('./package-config');
+  assert.equal(getRepositoryConfig({ repositories: {
+    'OldOrg/Sunshine': { repositoryId: 438803890, directory: 'Sunshine' }
+  } }, repository(999, 'OldOrg', 'Sunshine')), undefined);
+});
+
+test('invalid registries and failed organization discovery stop before changing stored assets', async t => {
+  const write = createFixture(t);
+  write('Alpha/nightly/keep.zip');
+  for (const invalid of [[], null, [''], [42], {}]) {
+    await assert.rejects(syncReleaseAssets(createMultiOrgGithub(invalid, {}, {}), context), /registry/);
+  }
+  const github = createMultiOrgGithub(['First', 'Second'], {
+    First: [], Second: new Error('discovery unavailable')
+  }, {});
+  await assert.rejects(syncReleaseAssets(github, context), /discovery unavailable/);
+  assert.ok(fs.existsSync('Alpha/nightly/keep.zip'));
+});
+
+test('unsafe and colliding storage directories are rejected before cleanup', async t => {
+  const write = createFixture(t, { defaultInclude: false, repositories: {
+    'First/A': { directory: 'same' }, 'Second/B': { directory: 'SAME' }
+  } });
+  write('Alpha/nightly/keep.zip');
+  const github = createMultiOrgGithub(['First', 'Second'], {
+    First: [repository(101, 'First', 'A')], Second: [repository(202, 'Second', 'B')]
+  }, {});
+  await assert.rejects(syncReleaseAssets(github, context), /Duplicate package directory/);
+  const { getRepositoryDirectory } = require('./package-config');
+  for (const directory of ['../escape', '.git', 'C:\\escape', '/absolute', '']) {
+    assert.throws(() => getRepositoryDirectory({ repositories: { 'First/A': { directory } } },
+      repository(101, 'First', 'A')), /Invalid package directory/);
+  }
+  assert.ok(fs.existsSync('Alpha/nightly/keep.zip'));
 });

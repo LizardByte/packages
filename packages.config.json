@@ -1,12 +1,16 @@
 {
   "defaultInclude": false,
   "repositories": {
-    "libvirtualhid": {
+    "LizardByte/libvirtualhid": {
+      "repositoryId": 1273341578,
+      "directory": "libvirtualhid",
       "includeAssets": [
         "*.msi"
       ]
     },
-    "Sunshine": {
+    "LizardByte/Sunshine": {
+      "repositoryId": 438803890,
+      "directory": "Sunshine",
       "includeAssets": [
         "*-installer.exe",
         "*-installer.msi"

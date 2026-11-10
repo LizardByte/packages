@@ -17,7 +17,8 @@ function encodeDirectAssetUrl(...segments) {
  */
 function buildPackagesData(repositories) {
     // Sort repositories by name
-    repositories.sort((a, b) => a.name.localeCompare(b.name));
+    repositories.sort((a, b) => a.name.localeCompare(b.name, 'en', { sensitivity: 'base' }) ||
+        (a.fullName || a.name).localeCompare(b.fullName || b.name));
 
     // Calculate totals
     const totalReleases = repositories.reduce((sum, repo) => sum + repo.releases.length, 0);
@@ -85,6 +86,9 @@ function normalizeRepositoryMetadata(repositoryMetadata = []) {
             releases.sort((a, b) => b.tag.localeCompare(a.tag, undefined, { numeric: true, sensitivity: 'base' }));
 
             return {
+                id: repo.id,
+                fullName: repo.fullName,
+                directory: repo.directory,
                 name: repo.name,
                 archived: Boolean(repo.archived),
                 url: repo.url,
