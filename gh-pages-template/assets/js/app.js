@@ -381,7 +381,8 @@ class UIManager {
         this.setHomeControlsVisible(false);
 
         const assets = Array.isArray(release.assets) ? release.assets : [];
-        const repositoryUrl = repo.url || `https://github.com/${repo.fullName || `LizardByte/${repo.name}`}`;
+        const fullName = repo.fullName || `LizardByte/${repo.name}`;
+        const repositoryUrl = repo.url || `https://github.com/${fullName}`;
         const releaseUrl = release.url || `${repositoryUrl}/releases/tag/${encodeURIComponent(release.tag)}`;
         const publishedAt = release.publishedAt ? this.formatUpdateTime(release.publishedAt) : null;
         const mirroredCount = assets.filter(asset => asset.directUrl).length;
