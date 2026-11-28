@@ -1,11 +1,5 @@
 /* Custom styles for packages page - minimal overrides to Bootstrap 5.3 */
 
-/* Custom hover effect for cards */
-.card:hover {
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-    transition: box-shadow 0.15s ease-in-out;
-}
-
 /* Ensure links in list items don't break layout */
 .list-group-item a {
     flex-grow: 1;
